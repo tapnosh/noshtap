@@ -7,7 +7,11 @@ tbd
 ## Project setup
 
 ```bash
+# Setup the project
 $ npm install
+
+# Run dev (local) db
+$ docker-compose up
 ```
 
 ## Compile and run the project
@@ -34,4 +38,14 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+```
+
+## Database
+
+```bash
+# Dev
+$ npm run prisma:dev -- migrate dev 
+
+# Prod
+# tbd
 ```
