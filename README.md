@@ -17,10 +17,7 @@ $ docker-compose up
 ## Compile and run the project
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
+# development mode
 $ npm run start:dev
 
 # production mode
