@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { RestaurantsService } from './restaurants.service';
-import { CreateRestaurantDto } from './dto/create-restaurant.dto';
+import { RestaurantsService } from '../services/restaurants.service';
+import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { Restaurant } from '@prisma/client';
 
 @Controller('restaurants')

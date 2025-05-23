@@ -23,7 +23,7 @@ model Restaurant {
 
   theme      RestaurantTheme              @relation(fields: [theme_id], references: [id])
   address    RestaurantAddress?
-  Images     RestaurantImages[]
+  images     RestaurantImages[]
   categories RestaurantCategoryRelation[]
 }
 
@@ -31,7 +31,8 @@ model RestaurantAddress {
   id            String               @id @default(uuid())
   restaurant_id String               @unique
   name          String
-  location      Unsupported("point")
+  lat           Decimal
+  lng           Decimal
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
 
