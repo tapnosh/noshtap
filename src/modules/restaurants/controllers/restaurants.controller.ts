@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { RestaurantsService } from '../services/restaurants.service';
 import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { Restaurant } from '@prisma/client';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('restaurants')
 export class RestaurantsController {
@@ -13,6 +14,7 @@ export class RestaurantsController {
   }
 
   @Get()
+  @Public()
   findAll(): Promise<Restaurant[]> {
     return this.restaurantsService.findAll();
   }
