@@ -18,6 +18,7 @@ model Restaurant {
   name        String   @db.VarChar(255)
   description String
   theme_id    String
+  ownerId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
