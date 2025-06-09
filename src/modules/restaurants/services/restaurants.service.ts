@@ -1,16 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateRestaurantDto } from "../dto/create-restaurant.dto";
+import { UpdateRestaurantDto } from "../dto/update-restaurant.dto";
 import { Restaurant, Prisma } from "@prisma/client";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 
 @Injectable()
 export class RestaurantsService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createRestaurantDto: CreateRestaurantDto): Promise<Restaurant> {
+    async create(createRestaurantDto: CreateRestaurantDto, userId: string): Promise<Restaurant> {
         const data: Prisma.RestaurantCreateInput = {
             name: createRestaurantDto.name,
             description: createRestaurantDto.description,
+            ownerId: userId,
             theme: { connect: { id: createRestaurantDto.theme_id } },
             address: createRestaurantDto.address ? {
                 create: {
@@ -42,6 +45,61 @@ export class RestaurantsService {
                     }
                 }
             }
+        });
+    }
+
+    async update(
+        id: string, 
+        dto: UpdateRestaurantDto,
+        userId: string
+    ): Promise<Restaurant> {
+        const restaurant = await this.prisma.restaurant.findUnique({
+            where: { id },
+            include: { images: true, categories: true },
+        });
+
+        if (!restaurant) {
+            throw new NotFoundException('The restaurant does not exist.');
+        }
+        
+        if (restaurant.ownerId !== userId) {
+            throw new ForbiddenException('You do not have access to this restaurant.');
+        }
+        
+        return this.prisma.restaurant.update({
+            where: { id },
+            data: {
+                name: dto.name,
+                description: dto.description,
+                theme: { connect: { id: dto.theme_id }},
+                images: {
+                    disconnect: restaurant.images.map((img) => ({ id: img.id })),
+                    create: dto.images.map((url) => ({
+                        image_url: url,
+                    })),
+                },
+
+                categories: {
+                    disconnect: restaurant.categories.map((cat) => ({
+                        id: cat.id,
+                    })),
+                    create: dto.category_ids.map((categoryId) => ({
+                        category: {
+                            connect: { id: categoryId },
+                        },
+                    })),
+                },
+            },
+            include: {
+                theme: true,
+                address: true,
+                images: true,
+                categories: {
+                    include: {
+                        category: true,
+                    },
+                },
+            },
         });
     }
 
