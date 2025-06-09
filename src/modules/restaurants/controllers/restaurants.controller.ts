@@ -4,16 +4,16 @@ import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/update-restaurant.dto';
 import { Restaurant } from '@prisma/client';
 import { Public } from 'src/decorators/public.decorator';
-import { ClerkAuthGuard } from 'src/modules/auth/clerk-auth.guard';
+import { CurrentUser } from 'src/decorators/current-user.decorator';
+import { User } from '@clerk/backend';
 
 @Controller('restaurants')
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) { }
 
   @Post()
-  @UseGuards(ClerkAuthGuard)
-  create(@Body() createRestaurantDto: CreateRestaurantDto, @Req() req: any,): Promise<Restaurant> {
-    return this.restaurantsService.create(createRestaurantDto, req.auth.userId);
+  create(@Body() createRestaurantDto: CreateRestaurantDto, @CurrentUser() user: User): Promise<Restaurant> {
+    return this.restaurantsService.create(createRestaurantDto, user.id);
   }
 
   @Get()
@@ -23,12 +23,11 @@ export class RestaurantsController {
   }
 
   @Put(':id')
-  @UseGuards(ClerkAuthGuard)
   update(
     @Param('id') id: string,
     @Body() dto: UpdateRestaurantDto,
-    @Req() req: any,
+    @CurrentUser() user: User,
   ){
-    return this.restaurantsService.update(id, dto, req.auth.userId);
+    return this.restaurantsService.update(id, dto, user.id);
   }
 }

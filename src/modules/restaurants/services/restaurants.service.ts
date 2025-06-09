@@ -59,42 +59,41 @@ export class RestaurantsService {
         });
 
         if (!restaurant) {
-            throw new NotFoundException('Restauracja nie istnieje.');
+            throw new NotFoundException('The restaurant does not exist.');
         }
         
         if (restaurant.ownerId !== userId) {
-            throw new ForbiddenException('Nie masz dostępu do tej restauracji.');
+            throw new ForbiddenException('You do not have access to this restaurant.');
         }
         
-        await this.prisma.restaurantImages.deleteMany( { where: { restaurant_id: id }});
-        await this.prisma.restaurantCategoryRelation.deleteMany( { where: { restaurant_id: id }})
-
-        await this.prisma.restaurantImages.createMany({
-            data: dto.images.map((url) => ({
-                restaurant_id: id,
-                image_url: url,
-            })),
-        });
-
-        await this.prisma.restaurantCategoryRelation.createMany({
-            data: dto.category_ids.map((categoryId) => ({
-                restaurant_id: id,
-                category_id: categoryId,
-            })),
-        });
-
         return this.prisma.restaurant.update({
             where: { id },
             data: {
                 name: dto.name,
                 description: dto.description,
                 theme: { connect: { id: dto.theme_id }},
+
+                images: {
+                    deleteMany: {},
+                    create: dto.images.map((url) => ({
+                        image_url: url,
+                    })),
+                },
+
+                categories: {
+                    deleteMany: {},
+                    create: dto.category_ids.map((categoryId) => ({
+                        category: {
+                            connect: { id: categoryId },
+                        },
+                    })),
+                },
             },
             include: {
                 theme: true,
                 address: true,
                 images: true,
-                categories: {
+                categories: { 
                     include: {
                         category: true,
                     },
@@ -102,6 +101,7 @@ export class RestaurantsService {
             },
         });
     }
+
 
     async findAll(): Promise<Restaurant[]> {
         return this.prisma.restaurant.findMany({
