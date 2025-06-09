@@ -10,11 +10,11 @@ export class RestaurantsService {
     constructor(private prisma: PrismaService) { }
 
     async create(createRestaurantDto: CreateRestaurantDto, userId: string): Promise<Restaurant> {
-        const data: Prisma.RestaurantCreateInput = {
+        var data: Prisma.RestaurantCreateInput = {
+            ownerId: userId,
             name: createRestaurantDto.name,
             description: createRestaurantDto.description,
-            ownerId: userId,
-            theme: { connect: { id: createRestaurantDto.theme_id } },
+            theme: this.getTheme(createRestaurantDto.theme_id, createRestaurantDto.theme),
             address: createRestaurantDto.address ? {
                 create: {
                     name: createRestaurantDto.address.name,
@@ -49,7 +49,7 @@ export class RestaurantsService {
     }
 
     async update(
-        id: string, 
+        id: string,
         dto: UpdateRestaurantDto,
         userId: string
     ): Promise<Restaurant> {
@@ -61,17 +61,17 @@ export class RestaurantsService {
         if (!restaurant) {
             throw new NotFoundException('The restaurant does not exist.');
         }
-        
+
         if (restaurant.ownerId !== userId) {
             throw new ForbiddenException('You do not have access to this restaurant.');
         }
-        
+
         return this.prisma.restaurant.update({
             where: { id },
             data: {
                 name: dto.name,
                 description: dto.description,
-                theme: { connect: { id: dto.theme_id }},
+                theme: { connect: { id: dto.theme_id } },
                 images: {
                     disconnect: restaurant.images.map((img) => ({ id: img.id })),
                     create: dto.images.map((url) => ({
@@ -116,5 +116,13 @@ export class RestaurantsService {
                 }
             }
         });
+    }
+
+    private getTheme(theme_id: string | undefined, theme: string | undefined): Prisma.RestaurantThemeCreateNestedOneWithoutRestaurantsInput {
+        if (theme_id) {
+            return { connect: { id: theme_id } };
+        }
+
+        return { create: { color: theme! } };
     }
 }
