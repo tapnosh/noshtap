@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Param, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Put, Param } from '@nestjs/common';
 import { RestaurantsService } from '../services/restaurants.service';
 import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/update-restaurant.dto';
@@ -13,6 +13,10 @@ export class RestaurantsController {
 
   @Post()
   create(@Body() createRestaurantDto: CreateRestaurantDto, @CurrentUser() user: User): Promise<Restaurant> {
+    if (!createRestaurantDto.theme_id && !createRestaurantDto.theme) {
+      throw new BadRequestException('You must provide either theme_id or theme');
+    }
+
     return this.restaurantsService.create(createRestaurantDto, user.id);
   }
 
@@ -27,7 +31,7 @@ export class RestaurantsController {
     @Param('id') id: string,
     @Body() dto: UpdateRestaurantDto,
     @CurrentUser() user: User,
-  ){
+  ) {
     return this.restaurantsService.update(id, dto, user.id);
   }
 }

@@ -20,10 +20,20 @@ export class CreateRestaurantDto {
 
   /**
    * The ID of the restaurant theme
+   * [INFO] Has precedence over theme if provided
    * @example "20260cfc-d1b6-47c0-8946-01f0f238eaeb"
    */
   @IsUUID()
-  theme_id: string;
+  theme_id?: string;
+
+  /**
+   * The theme hex color code 
+   * [INFO] If theme_id is not provided this field is required
+   * @example "#3B82F6"
+   */
+  @IsString()
+  @MaxLength(255)
+  theme?: string;
 
   /**
    * The images of the restaurant
