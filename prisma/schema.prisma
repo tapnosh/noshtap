@@ -21,6 +21,7 @@ model Restaurant {
   ownerId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  is_deleted  Boolean @default(false)
 
   theme      RestaurantTheme              @relation(fields: [theme_id], references: [id])
   address    RestaurantAddress?
