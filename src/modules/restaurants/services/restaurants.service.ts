@@ -23,14 +23,14 @@ export class RestaurantsService {
                 }
             } : undefined,
             images: {
-                createMany: {
-                    data: createRestaurantDto.images.map(image => ({ image_url: image }))
-                }
+                create: createRestaurantDto.images.map((image) => ({
+                    image_url: image,
+                })),
             },
             categories: {
-                createMany: {
-                    data: createRestaurantDto.category_ids.map(id => ({ category_id: id }))
-                }
+                create: createRestaurantDto.category_ids.map((id) => ({
+                    category: { connect: { id } },
+                })),
             },
         };
 
