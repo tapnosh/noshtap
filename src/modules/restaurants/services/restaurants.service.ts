@@ -51,10 +51,14 @@ export class RestaurantsService {
     async update(
         id: string,
         dto: UpdateRestaurantDto,
-        userId: string
+        userId: string,
     ): Promise<Restaurant> {
-        const restaurant = await this.prisma.restaurant.findUnique({
-            where: { id },
+        // TODO: Refactor with race condition in mind
+        const restaurant = await this.prisma.restaurant.findFirst({
+            where: {
+                id,
+                is_deleted: false,
+            },
             include: { images: true, categories: true },
         });
 
@@ -103,8 +107,33 @@ export class RestaurantsService {
         });
     }
 
+    async delete(
+        id: string,
+        userId: string,
+    ): Promise<void> {
+        const restaurant = await this.prisma.restaurant.update({
+            where: { id, ownerId: userId },
+            data: { is_deleted: true },
+            include: {
+                theme: true,
+                address: true,
+                images: true,
+                categories: {
+                    include: {
+                        category: true,
+                    }
+                }
+            }
+        });
+
+        if (!restaurant) {
+            throw new NotFoundException('The restaurant does not exist or you do not have access to it.');
+        }
+    }
+
     async findAll(): Promise<Restaurant[]> {
         return this.prisma.restaurant.findMany({
+            where: { is_deleted: false },
             include: {
                 theme: true,
                 address: true,
