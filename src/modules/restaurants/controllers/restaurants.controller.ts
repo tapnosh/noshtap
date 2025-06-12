@@ -16,7 +16,6 @@ export class RestaurantsController {
     if (!createRestaurantDto.theme_id && !createRestaurantDto.theme) {
       throw new BadRequestException('You must provide either theme_id or theme');
     }
-
     return this.restaurantsService.create(createRestaurantDto, user.id);
   }
 
@@ -40,6 +39,6 @@ export class RestaurantsController {
     @Param('id') id: string,
     @CurrentUser() user: User,
   ) {
-    return this.restaurantsService.softDelete(id, user.id);
+    return this.restaurantsService.delete(id, user.id);
   }
 }
