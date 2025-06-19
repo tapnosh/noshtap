@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateThemeDto } from './dto/create-theme.dto';
+import { CreateThemeDto } from '../dto/create-theme.dto';
 import { RestaurantTheme } from '@prisma/client';
 
 
@@ -12,10 +12,11 @@ export class ThemesService {
     return this.prisma.restaurantTheme.findMany();
   }
 
-  async create(dto: CreateThemeDto) {
+  async create(dto: CreateThemeDto, userId: string) {
     return this.prisma.restaurantTheme.create({
       data: {
         color: dto.color,
+        ownerId: userId,
       },
     });
   }

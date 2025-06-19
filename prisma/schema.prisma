@@ -54,6 +54,7 @@ model RestaurantImages {
 model RestaurantTheme {
   id        String   @id @default(uuid())
   color     String   @db.Char(7) // Format: #RRGGBB
+  ownerId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

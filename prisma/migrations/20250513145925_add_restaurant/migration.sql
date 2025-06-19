@@ -36,6 +36,7 @@ CREATE TABLE "RestaurantImages" (
 CREATE TABLE "RestaurantTheme" (
     "id" TEXT NOT NULL,
     "color" CHAR(7) NOT NULL,
+    "ownerId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
