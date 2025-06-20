@@ -1,15 +1,22 @@
-import { Controller, Post, Req, Inject } from '@nestjs/common';
+import { Controller, Post, Headers, Inject, Body } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Public } from '../../decorators/public.decorator';
-import { verifyWebhook } from '@clerk/backend/webhooks';
 import { USER_EVENTS, UserCreatedEvent, UserUpdatedEvent, UserDeletedEvent } from './users.type';
+import { ConfigService } from '@nestjs/config';
+import { Webhook } from 'svix';
+
+interface WebhookEvent {
+    type: string;
+    data: UserCreatedEvent | UserUpdatedEvent | UserDeletedEvent;
+}
 
 @Controller('webhooks')
 @Public()
 export class WebhooksController {
     constructor(
         @Inject(EventEmitter2)
-        private readonly eventEmitter: EventEmitter2
+        private readonly eventEmitter: EventEmitter2,
+        private readonly configService: ConfigService
     ) { }
 
     private readonly EVENT_HANDLERS = {
@@ -19,9 +26,18 @@ export class WebhooksController {
     }
 
     @Post('')
-    async handleClerkUserWebhook(@Req() req: Request) {
+    async handleClerkUserWebhook(
+        @Body() body: any,
+        @Headers('svix-id') svixId: string,
+        @Headers('svix-timestamp') svixTimestamp: string,
+        @Headers('svix-signature') svixSignature: string
+    ): Promise<{ status: string } | { error: string }> {
         try {
-            const evt = await verifyWebhook(req);
+            console.log('Webhook received:', body);
+
+            const evt = this.verifyWebhook(body, svixId, svixTimestamp, svixSignature) as WebhookEvent;
+
+            console.log('Webhook verified:', evt);
 
             const handler = this.EVENT_HANDLERS[evt.type];
             if (!handler) {
@@ -62,5 +78,26 @@ export class WebhooksController {
         this.eventEmitter.emit(USER_EVENTS.USER_DELETED, userData);
 
         return { status: 'processed' };
+    }
+
+    private verifyWebhook(body: any, svixId: string, svixTimestamp: string, svixSignature: string): unknown {
+        const secret = this.configService.get('CLERK_WEBHOOK_SECRET');
+
+        if (!secret) {
+            throw new Error('CLERK_WEBHOOK_SECRET is not set');
+        }
+
+        const wh = new Webhook(secret);
+
+        const headers = {
+            'svix-id': svixId,
+            'svix-timestamp': svixTimestamp,
+            'svix-signature': svixSignature,
+        };
+
+        // Convert body to JSON string for verification
+        const payload = typeof body === 'string' ? body : JSON.stringify(body);
+
+        return wh.verify(payload, headers);
     }
 } 
