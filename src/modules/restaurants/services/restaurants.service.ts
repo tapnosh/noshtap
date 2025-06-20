@@ -1,15 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateRestaurantDto } from "../dto/create-restaurant.dto";
-import { UpdateRestaurantDto } from "../dto/update-restaurant.dto";
+import { CreateRestaurantDto } from "../dto/requests/create-restaurant.dto";
+import { UpdateRestaurantDto } from "../dto/requests/update-restaurant.dto";
 import { Restaurant, Prisma } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
+import { RestaurantWithRelations } from "../types/restaurant_with_relations";
 
 @Injectable()
 export class RestaurantsService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createRestaurantDto: CreateRestaurantDto, userId: string): Promise<Restaurant> {
+    async create(createRestaurantDto: CreateRestaurantDto, userId: string): Promise<RestaurantWithRelations> {
         var data: Prisma.RestaurantCreateInput = {
             ownerId: userId,
             name: createRestaurantDto.name,
@@ -24,7 +25,11 @@ export class RestaurantsService {
             } : undefined,
             images: {
                 create: createRestaurantDto.images.map((image) => ({
-                    image_url: image,
+                    image_url: image.url,
+                    download_url: image.downloadUrl,
+                    pathname: image.pathname,
+                    content_type: image.contentType,
+                    content_disposition: image.contentDisposition,
                 })),
             },
             categories: {
@@ -78,8 +83,12 @@ export class RestaurantsService {
                 theme: { connect: { id: dto.theme_id } },
                 images: {
                     disconnect: restaurant.images.map((img) => ({ id: img.id })),
-                    create: dto.images.map((url) => ({
-                        image_url: url,
+                    create: dto.images.map((image) => ({
+                        image_url: image.url,
+                        download_url: image.downloadUrl,
+                        pathname: image.pathname,
+                        content_type: image.contentType,
+                        content_disposition: image.contentDisposition,
                     })),
                 },
 

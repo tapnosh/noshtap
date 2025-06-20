@@ -1,5 +1,4 @@
-import { Decimal } from '@prisma/client/runtime/library';
-import { IsString, MaxLength, IsNotEmpty, IsNumber, IsDecimal } from 'class-validator';
+import { IsString, MaxLength, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateAddressDto {
     /**

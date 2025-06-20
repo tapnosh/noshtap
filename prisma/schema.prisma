@@ -21,40 +21,44 @@ model Restaurant {
   ownerId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  is_deleted  Boolean @default(false)
-
-  @@index([ownerId])
-  @@index([is_deleted])
-  @@index([ownerId, is_deleted])
+  is_deleted  Boolean  @default(false)
 
   theme      RestaurantTheme              @relation(fields: [theme_id], references: [id])
   address    RestaurantAddress?
   images     RestaurantImages[]
   categories RestaurantCategoryRelation[]
+
+  @@index([ownerId])
+  @@index([is_deleted])
+  @@index([ownerId, is_deleted])
 }
 
 model RestaurantAddress {
-  id            String               @id @default(uuid())
-  restaurant_id String               @unique
+  id            String   @id @default(uuid())
+  restaurant_id String   @unique
   name          String
   lat           Decimal
   lng           Decimal
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   restaurant Restaurant @relation(fields: [restaurant_id], references: [id])
 }
 
 model RestaurantImages {
-  id            String   @id @default(uuid())
-  restaurant_id String
-  image_url     String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@index([restaurant_id])
+  id                  String   @id @default(uuid())
+  restaurant_id       String
+  image_url           String
+  download_url        String
+  pathname            String
+  content_type        String
+  content_disposition String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   restaurant Restaurant @relation(fields: [restaurant_id], references: [id])
+
+  @@index([restaurant_id])
 }
 
 model RestaurantTheme {
@@ -64,9 +68,9 @@ model RestaurantTheme {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([ownerId])
-
   restaurants Restaurant[]
+
+  @@index([ownerId])
 }
 
 model RestaurantCategory {

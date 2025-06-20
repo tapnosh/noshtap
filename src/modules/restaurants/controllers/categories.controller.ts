@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CategoriesService } from '../services/categories.service';
-import { CreateCategoryDto } from '../dto/create-category.dto';
+import { CreateCategoryDto } from '../dto/requests/create-category.dto';
 import { RestaurantCategory } from '@prisma/client';
 import { Public } from 'src/decorators/public.decorator';
 
