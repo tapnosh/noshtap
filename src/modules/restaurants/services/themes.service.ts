@@ -11,21 +11,7 @@ export class ThemesService {
 
   @OnEvent(USER_EVENTS.USER_CREATED)
   async handleUserCreated(userData: UserCreatedEvent) {
-    try {
-      console.log(`Creating default theme for user: ${userData.id}`);
-
-      // Create a default theme with a nice blue color
-      const defaultTheme = await this.prisma.restaurantTheme.create({
-        data: {
-          color: '#3B82F6',
-          ownerId: userData.id,
-        },
-      });
-
-      console.log(`Default theme created for user ${userData.id}:`, defaultTheme.id);
-    } catch (error) {
-      console.error(`Failed to create default theme for user ${userData.id}:`, error);
-    }
+    await this.createDefaultTheme(userData.id);
   }
 
 
@@ -37,6 +23,15 @@ export class ThemesService {
     return this.prisma.restaurantTheme.create({
       data: {
         color: dto.color,
+        ownerId: userId,
+      },
+    });
+  }
+
+  private async createDefaultTheme(userId: string) {
+    return this.prisma.restaurantTheme.create({
+      data: {
+        color: '#3B82F6',
         ownerId: userId,
       },
     });

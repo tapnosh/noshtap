@@ -32,55 +32,45 @@ export class WebhooksController {
         @Headers('svix-timestamp') svixTimestamp: string,
         @Headers('svix-signature') svixSignature: string
     ): Promise<{ status: string } | { error: string }> {
-        try {
-            console.log('Webhook received:', body);
+        const evt = this.verifyWebhook(
+            body,
+            svixId,
+            svixTimestamp,
+            svixSignature
+        ) as WebhookEvent;
 
-            const evt = this.verifyWebhook(body, svixId, svixTimestamp, svixSignature) as WebhookEvent;
-
-            console.log('Webhook verified:', evt);
-
-            const handler = this.EVENT_HANDLERS[evt.type];
-            if (!handler) {
-                console.log(`Unhandled webhook type: ${evt.type}`);
-                return { status: 'ignored' };
-            }
-
-            await handler(evt.data);
-            return { status: 'processed' };
-        } catch (error) {
-            console.error('Webhook verification failed:', error);
-            return { error: 'Webhook verification failed' };
+        const handler = this.EVENT_HANDLERS[evt.type];
+        if (!handler) {
+            throw new Error(`Unhandled webhook type: ${evt.type}`);
         }
+
+        return handler(evt.data);
     }
 
-    private async handleUserCreated(userData: UserCreatedEvent) {
-        console.log('User created:', userData.id);
-
-        // Emit event for other modules to react to
+    private handleUserCreated(userData: UserCreatedEvent) {
         this.eventEmitter.emit(USER_EVENTS.USER_CREATED, userData);
 
         return { status: 'processed' };
     }
 
-    private async handleUserUpdated(userData: UserUpdatedEvent) {
-        console.log('User updated:', userData.id);
-
-        // Emit event for other modules to react to
+    private handleUserUpdated(userData: UserUpdatedEvent) {
         this.eventEmitter.emit(USER_EVENTS.USER_UPDATED, userData);
 
         return { status: 'processed' };
     }
 
-    private async handleUserDeleted(userData: UserDeletedEvent) {
-        console.log('User deleted:', userData.id);
-
-        // Emit event for other modules to react to
+    private handleUserDeleted(userData: UserDeletedEvent) {
         this.eventEmitter.emit(USER_EVENTS.USER_DELETED, userData);
 
         return { status: 'processed' };
     }
 
-    private verifyWebhook(body: any, svixId: string, svixTimestamp: string, svixSignature: string): unknown {
+    private verifyWebhook(
+        body: any,
+        svixId: string,
+        svixTimestamp: string,
+        svixSignature: string
+    ): unknown {
         const secret = this.configService.get('CLERK_WEBHOOK_SIGNING_SECRET');
 
         if (!secret) {
@@ -95,7 +85,6 @@ export class WebhooksController {
             'svix-signature': svixSignature,
         };
 
-        // Convert body to JSON string for verification
         const payload = typeof body === 'string' ? body : JSON.stringify(body);
 
         return wh.verify(payload, headers);
