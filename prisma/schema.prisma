@@ -23,6 +23,10 @@ model Restaurant {
   updatedAt   DateTime @updatedAt
   is_deleted  Boolean @default(false)
 
+  @@index([ownerId])
+  @@index([is_deleted])
+  @@index([ownerId, is_deleted])
+
   theme      RestaurantTheme              @relation(fields: [theme_id], references: [id])
   address    RestaurantAddress?
   images     RestaurantImages[]
@@ -48,6 +52,8 @@ model RestaurantImages {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  @@index([restaurant_id])
+
   restaurant Restaurant @relation(fields: [restaurant_id], references: [id])
 }
 
@@ -57,6 +63,8 @@ model RestaurantTheme {
   ownerId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
 
   restaurants Restaurant[]
 }
