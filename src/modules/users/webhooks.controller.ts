@@ -81,10 +81,10 @@ export class WebhooksController {
     }
 
     private verifyWebhook(body: any, svixId: string, svixTimestamp: string, svixSignature: string): unknown {
-        const secret = this.configService.get('CLERK_WEBHOOK_SECRET');
+        const secret = this.configService.get('CLERK_WEBHOOK_SIGNING_SECRET');
 
         if (!secret) {
-            throw new Error('CLERK_WEBHOOK_SECRET is not set');
+            throw new Error('CLERK_WEBHOOK_SIGNING_SECRET is not set');
         }
 
         const wh = new Webhook(secret);
