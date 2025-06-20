@@ -15,8 +15,12 @@ export class ThemesService {
   }
 
 
-  async findAll(): Promise<RestaurantTheme[]> {
-    return this.prisma.restaurantTheme.findMany();
+  async findAll(userId: string): Promise<RestaurantTheme[]> {
+    return this.prisma.restaurantTheme.findMany({
+      where: {
+        ownerId: userId,
+      },
+    });
   }
 
   async create(dto: CreateThemeDto, userId: string) {

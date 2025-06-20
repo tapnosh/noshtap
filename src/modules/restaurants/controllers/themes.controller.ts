@@ -10,9 +10,8 @@ export class ThemesController {
   constructor(private readonly themesService: ThemesService) { }
 
   @Get()
-  @Public()
-  getAllThemes() {
-    return this.themesService.findAll();
+  getAllThemes(@CurrentUser() user: User) {
+    return this.themesService.findAll(user.id);
   }
 
   @Post()
