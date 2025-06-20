@@ -6,7 +6,7 @@ import { RestaurantTheme } from '@prisma/client';
 
 @Injectable()
 export class ThemesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findAll(): Promise<RestaurantTheme[]> {
     return this.prisma.restaurantTheme.findMany();
