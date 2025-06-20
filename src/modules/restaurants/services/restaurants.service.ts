@@ -14,7 +14,7 @@ export class RestaurantsService {
             ownerId: userId,
             name: createRestaurantDto.name,
             description: createRestaurantDto.description,
-            theme: this.getTheme(createRestaurantDto.theme_id, createRestaurantDto.theme),
+            theme: this.getTheme(createRestaurantDto.theme_id, createRestaurantDto.theme, userId),
             address: createRestaurantDto.address ? {
                 create: {
                     name: createRestaurantDto.address.name,
@@ -147,11 +147,11 @@ export class RestaurantsService {
         });
     }
 
-    private getTheme(theme_id: string | undefined, theme: string | undefined): Prisma.RestaurantThemeCreateNestedOneWithoutRestaurantsInput {
+    private getTheme(theme_id: string | undefined, theme: string | undefined, userId: string): Prisma.RestaurantThemeCreateNestedOneWithoutRestaurantsInput {
         if (theme_id) {
             return { connect: { id: theme_id } };
         }
 
-        return { create: { color: theme! } };
+        return { create: { color: theme!, ownerId: userId } };
     }
 }

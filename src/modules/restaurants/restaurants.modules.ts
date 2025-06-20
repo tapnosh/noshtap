@@ -4,11 +4,13 @@ import { RestaurantsService } from "./services/restaurants.service";
 import { Module } from "@nestjs/common";
 import { CategoriesController } from "./controllers/categories.controller";
 import { CategoriesService } from "./services/categories.service";
+import { ThemesController } from "./controllers/themes.controller";
+import { ThemesService } from "./services/themes.service";
 
 @Module({
   imports: [PrismaModule],
-  controllers: [RestaurantsController, CategoriesController],
-  providers: [RestaurantsService, CategoriesService],
-  exports: [RestaurantsService, CategoriesService],
+  controllers: [RestaurantsController, CategoriesController, ThemesController],
+  providers: [RestaurantsService, CategoriesService, ThemesService],
+  exports: [RestaurantsService, CategoriesService, ThemesService],
 })
 export class RestaurantsModule { }

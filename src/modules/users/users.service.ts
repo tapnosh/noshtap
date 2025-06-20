@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-
 import { ClerkClient } from '@clerk/backend';
 import {
     CreateUserParams,
