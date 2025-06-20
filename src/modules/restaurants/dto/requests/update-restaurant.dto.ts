@@ -1,4 +1,5 @@
 import { IsArray, IsString, IsUUID, MaxLength } from 'class-validator';
+import { CreateImageDto } from './create-image.dto';
 
 export class UpdateRestaurantDto {
     @IsString()
@@ -13,7 +14,7 @@ export class UpdateRestaurantDto {
 
     @IsArray()
     @IsString({ each: true })
-    images: string[];
+    images: CreateImageDto[];
 
     @IsArray()
     @IsString({ each: true })

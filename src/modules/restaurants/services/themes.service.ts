@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateThemeDto } from '../dto/create-theme.dto';
+import { CreateThemeDto } from '../dto/requests/create-theme.dto';
 import { RestaurantTheme } from '@prisma/client';
 import { USER_EVENTS, UserCreatedEvent } from '../../users/users.type';
 

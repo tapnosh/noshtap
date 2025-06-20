@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateCategoryDto } from "../dto/create-category.dto";
+import { CreateCategoryDto } from "../dto/requests/create-category.dto";
 import { Prisma, RestaurantCategory } from "@prisma/client";
 
 @Injectable()

@@ -1,6 +1,7 @@
 import { IsArray, IsOptional, IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { CreateAddressDto } from './create-address.dto';
 import { Type } from 'class-transformer';
+import { CreateImageDto } from './create-image.dto';
 
 export class CreateRestaurantDto {
   /**
@@ -41,7 +42,7 @@ export class CreateRestaurantDto {
    */
   @IsArray()
   @IsString({ each: true })
-  images: string[];
+  images: CreateImageDto[];
 
   /**
    * The categories of the restaurant
