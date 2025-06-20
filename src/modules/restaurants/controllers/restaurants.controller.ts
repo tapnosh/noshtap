@@ -2,7 +2,6 @@ import { BadRequestException, Body, Controller, Get, Post, Put, Delete, Param } 
 import { RestaurantsService } from '../services/restaurants.service';
 import { CreateRestaurantDto } from '../dto/requests/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/requests/update-restaurant.dto';
-import { Restaurant } from '@prisma/client';
 import { Public } from 'src/decorators/public.decorator';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { User } from '@clerk/backend';
@@ -25,24 +24,30 @@ export class RestaurantsController {
 
   @Get()
   @Public()
-  findAll(): Promise<Restaurant[]> {
-    return this.restaurantsService.findAll();
+  async findAll(): Promise<RestaurantDto[]> {
+    const restaurants = await this.restaurantsService.findAll();
+
+    return restaurants.map(restaurant => RestaurantDto.fromPrisma(restaurant));
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateRestaurantDto,
     @CurrentUser() user: User,
   ) {
-    return this.restaurantsService.update(id, dto, user.id);
+    const restaurant = await this.restaurantsService.update(id, dto, user.id);
+
+    return RestaurantDto.fromPrisma(restaurant, user.id);
   }
 
   @Delete(':id')
-  remove(
+  async remove(
     @Param('id') id: string,
     @CurrentUser() user: User,
   ) {
-    return this.restaurantsService.delete(id, user.id);
+    await this.restaurantsService.delete(id, user.id);
+
+    return { message: 'Restaurant deleted successfully' };
   }
 }

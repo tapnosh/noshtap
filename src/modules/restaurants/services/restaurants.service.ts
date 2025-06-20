@@ -57,7 +57,7 @@ export class RestaurantsService {
         id: string,
         dto: UpdateRestaurantDto,
         userId: string,
-    ): Promise<Restaurant> {
+    ): Promise<RestaurantWithRelations> {
         // TODO: Refactor with race condition in mind
         const restaurant = await this.prisma.restaurant.findFirst({
             where: {
@@ -140,7 +140,7 @@ export class RestaurantsService {
         }
     }
 
-    async findAll(): Promise<Restaurant[]> {
+    async findAll(): Promise<RestaurantWithRelations[]> {
         return this.prisma.restaurant.findMany({
             where: { is_deleted: false },
             include: {
