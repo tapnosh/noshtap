@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Put, Delete, Param } from "@nestjs/common"
 import { MenusService } from '../services/menus.service';
 import { CreateMenuDto } from '../dto/create-menu.dto';
 import { UpdateMenuDto } from '../dto/update-menu.dto';
-import { Public } from 'src/decorators/public.decorator';
 import { CurrentUser } from "src/decorators/current-user.decorator";
 import { User } from '@clerk/backend';
 import { RestaurantMenu } from "@prisma/client";

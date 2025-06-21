@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthModule } from './modules/auth/auth.module';
-import { MenusModule } from './modules/menus/menus.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.modules';
 import { PrismaModule } from './prisma/prisma.module';
 import { ClerkClientProvider } from './providers/clerk-client.provider';
