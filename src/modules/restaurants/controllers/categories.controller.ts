@@ -14,8 +14,8 @@ export class CategoriesController {
         return this.categoriesService.create(createCategoryDto);
     }
 
-    @Public()
     @Get()
+    @Public()
     findAll(): Promise<RestaurantCategory[]> {
         return this.categoriesService.findAll();
     }

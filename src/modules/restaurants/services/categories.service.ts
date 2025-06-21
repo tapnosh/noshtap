@@ -12,7 +12,6 @@ export class CategoriesService {
     }
 
     async findAll(): Promise<RestaurantCategory[]> {
-        return this.prisma.restaurantCategory.findMany({
-        });
+        return this.prisma.restaurantCategory.findMany({});
     }
 }
