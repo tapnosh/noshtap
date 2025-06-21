@@ -5,48 +5,49 @@ import { UpdateMenuDto } from '../dto/update-menu.dto';
 import { CurrentUser } from "src/decorators/current-user.decorator";
 import { User } from '@clerk/backend';
 import { RestaurantMenu } from "@prisma/client";
+import { Public } from "src/decorators/public.decorator";
 
-@Controller('menus')
+@Controller('restaurants/:restaurantId/menu')
 export class MenusController {
-    constructor(private readonly menusService: MenusService) {}
+    constructor(private readonly menusService: MenusService) { }
 
     @Post()
     create(
-        @Body() CreateMenuDto: CreateMenuDto,
+        @Param('restaurantId') restaurantId: string,
+        @Body() createMenuDto: CreateMenuDto,
         @CurrentUser() user: User,
     ): Promise<RestaurantMenu> {
-        return this.menusService.create(CreateMenuDto, user.id);
+        return this.menusService.create(restaurantId, createMenuDto, user.id);
     }
 
     @Get()
-    findAll(
-        @CurrentUser() user: User,
-    ): Promise<RestaurantMenu[]> {
-        return this.menusService.findAll(user.id);
-    }
-
-    @Get(':id')
-    findOne(
-        @Param('id') id: string,
-        @CurrentUser() user: User,
-    ): Promise<RestaurantMenu> {
-        return this.menusService.findOne(id, user.id);
+    @Public()
+    findLatest(
+        @Param('restaurantId') restaurantId: string,
+    ): Promise<RestaurantMenu | null> {
+        return this.menusService.findLatest(restaurantId);
     }
 
     @Put(':id')
     update(
+        @Param('restaurantId') restaurantId: string,
         @Param('id') id: string,
         @Body() dto: UpdateMenuDto,
         @CurrentUser() user: User,
     ) {
-        return this.menusService.update(id, dto, user.id);
+        return this.menusService.update(id, restaurantId, dto, user.id);
     }
 
     @Delete(':id')
-    delete(
+    async delete(
+        @Param('restaurantId') restaurantId: string,
         @Param('id') id: string,
-        @CurrentUser() user: User
+        @CurrentUser() user: User,
     ) {
-        return this.menusService.delete(id, user.id);
+        await this.menusService.delete(id, restaurantId, user.id);
+
+        return {
+            message: 'Menu deleted successfully',
+        };
     }
 }

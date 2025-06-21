@@ -6,101 +6,110 @@ import { RestaurantMenu } from "@prisma/client";
 
 @Injectable()
 export class MenusService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) { }
 
-    async create(CreateMenuDto: CreateMenuDto, userId: string): Promise<RestaurantMenu> {
-        return this.prisma.restaurantMenu.create({
+    async create(restaurantId: string, createMenuDto: CreateMenuDto, userId: string): Promise<RestaurantMenu> {
+        const restaurant = await this.prisma.restaurant.findUnique({
+            where: {
+                id: restaurantId,
+                ownerId: userId,
+                is_deleted: false
+            }
+        });
+
+        if (!restaurant) {
+            throw new NotFoundException('Restaurant not found.');
+        }
+
+        return await this.prisma.restaurantMenu.create({
             data: {
-                name: CreateMenuDto.name,
-                schema: CreateMenuDto.schema,
-                UserId: userId,
-                restaurant: { connect: { id: CreateMenuDto.restaurant_id } },
+                name: createMenuDto.name,
+                schema: createMenuDto.schema,
+                restaurant: {
+                    connect: {
+                        id: restaurantId,
+                    }
+                },
+
             },
         });
-    }
-
-    async findAll(userId: string): Promise<RestaurantMenu[]> {
-        return this.prisma.restaurantMenu.findMany({
-            where: { 
-                UserId: userId,
-                is_deleted: false,
-            },
-        });
-    }
-
-    async findOne(id: string, userId: string): Promise<RestaurantMenu> {
-        const menu = await this.prisma.restaurantMenu.findUnique({ where: { id } });
-
-        if (!menu) { // || menu.is_deleted - frontend needs access to deleted menus for data extraction
-            throw new NotFoundException('Menu not found.');
-        }
-
-        if (menu.UserId !== userId) {
-            throw new ForbiddenException('You do not have access to this menu.');
-        }
-
-        return menu;
     }
 
     async update(
         id: string,
-        UpdateMenuDto: UpdateMenuDto,
+        restaurantId: string,
+        updateMenuDto: UpdateMenuDto,
         userId: string,
     ): Promise<RestaurantMenu> {
-        const updated = await this.prisma.restaurantMenu.updateMany({
+        return this.prisma.restaurantMenu.update({
             where: {
-                id,
-                UserId: userId,
+                id: id,
                 is_deleted: false,
+                restaurant: {
+                    id: restaurantId,
+                    ownerId: userId,
+                    is_deleted: false,
+                },
             },
             data: {
-                name: UpdateMenuDto.name,
-                schema: UpdateMenuDto.schema,
+                name: updateMenuDto.name,
+                schema: updateMenuDto.schema,
             },
         });
-
-        if (updated.count == 0) {
-            const menu = await this.prisma.restaurantMenu.findUnique({ where: { id } });
-
-            if (!menu || menu.is_deleted) {
-                throw new NotFoundException('Menu not found.');
-            }
-
-            throw new ForbiddenException('You do not have permission to edit this menu.');
-        }
-
-       const result = await this.prisma.restaurantMenu.findUnique({ where: { id } });
-
-       if (!result) {
-            throw new NotFoundException('Menu not found after update.');
-       }
-
-       return result;
     }
 
     async delete(
         id: string,
+        restaurantId: string,
         userId: string,
     ): Promise<void> {
-        const result = await this.prisma.restaurantMenu.updateMany({
+        const result = await this.prisma.restaurantMenu.update({
             where: {
                 id,
-                UserId: userId,
                 is_deleted: false,
+                restaurant: {
+                    id: restaurantId,
+                    ownerId: userId,
+                    is_deleted: false,
+                },
             },
             data: {
                 is_deleted: true,
             }
         });
 
-        if (result.count == 0) {
-            const menu = await this.prisma.restaurantMenu.findUnique({ where: { id } });
-
-            if (!menu || menu.is_deleted) {
-                throw new NotFoundException('Menu not found.');
-            }
-
-            throw new ForbiddenException('You do not have permission to delete this menu.');
+        if (!result) {
+            throw new NotFoundException('Menu not found.');
         }
+
+        return;
+    }
+
+    async findAll(restaurantId: string, userId: string): Promise<RestaurantMenu[]> {
+        return this.prisma.restaurantMenu.findMany({
+            where: {
+                is_deleted: false,
+                restaurant: {
+                    id: restaurantId,
+                    ownerId: userId,
+                    is_deleted: false,
+                },
+            },
+        });
+    }
+
+    async findLatest(restaurantId: string): Promise<RestaurantMenu | null> {
+        return this.prisma.restaurantMenu.findFirst({
+            where: {
+                is_deleted: false,
+                restaurant: {
+                    id: restaurantId,
+                    is_deleted: false,
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
     }
 }
