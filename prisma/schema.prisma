@@ -17,6 +17,7 @@ model Restaurant {
   id          String   @id @default(uuid())
   name        String   @db.VarChar(255)
   description String
+  slug        String   @unique @db.VarChar(255)
   theme_id    String
   ownerId     String
   createdAt   DateTime @default(now())
@@ -31,6 +32,7 @@ model Restaurant {
 
   @@unique([id, ownerId, is_deleted(false)])
   @@unique([id, is_deleted(false)])
+  @@unique([slug, is_deleted(false)])
   @@index([ownerId, is_deleted(false)])
 }
 

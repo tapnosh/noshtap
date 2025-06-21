@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Put, Delete, Param } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Put, Delete, Param, NotFoundException } from '@nestjs/common';
 import { RestaurantsService } from '../services/restaurants.service';
 import { CreateRestaurantDto } from '../dto/requests/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/requests/update-restaurant.dto';
@@ -22,14 +22,6 @@ export class RestaurantsController {
     return RestaurantDto.fromPrisma(restaurant, user.id);
   }
 
-  @Get()
-  @Public()
-  async findAll(): Promise<RestaurantDto[]> {
-    const restaurants = await this.restaurantsService.findAll();
-
-    return restaurants.map(restaurant => RestaurantDto.fromPrisma(restaurant));
-  }
-
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -50,4 +42,25 @@ export class RestaurantsController {
 
     return { message: 'Restaurant deleted successfully' };
   }
+
+  @Get()
+  @Public()
+  async findAll(): Promise<RestaurantDto[]> {
+    const restaurants = await this.restaurantsService.findAll();
+
+    return restaurants.map(restaurant => RestaurantDto.fromPrisma(restaurant));
+  }
+
+  @Get(':slug')
+  @Public()
+  async findOne(@Param('slug') slug: string): Promise<RestaurantDto> {
+    const restaurant = await this.restaurantsService.findOne(slug);
+
+    if (!restaurant) {
+      throw new NotFoundException('Restaurant not found');
+    }
+
+    return RestaurantDto.fromPrisma(restaurant);
+  }
+
 }
