@@ -29,6 +29,7 @@ model Restaurant {
   images     RestaurantImages[]
   categories RestaurantCategoryRelation[]
   menus      RestaurantMenu[]
+  QrCode     QrCode[]
 
   @@unique([id, ownerId, is_deleted(false)])
   @@unique([id, is_deleted(false)])
@@ -112,4 +113,21 @@ model RestaurantMenu {
 
   @@index([restaurant_id, is_deleted(false)])
   @@index([is_deleted(false)])
+}
+
+model QrCode {
+  id            String  @id @default(uuid())
+  restaurant_id String
+  code          String  @unique
+  redirect_url  String
+  is_deleted    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurant_id], references: [id])
+
+  @@unique([code, is_deleted(false)])
+  @@unique([code, restaurant_id, is_deleted(false)])
+  @@index([restaurant_id, is_deleted(false)])
 }

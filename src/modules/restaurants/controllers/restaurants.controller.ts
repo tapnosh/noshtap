@@ -6,10 +6,15 @@ import { Public } from 'src/decorators/public.decorator';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { User } from '@clerk/backend';
 import { RestaurantDto } from '../dto/responses/restaurant.dto';
+import { QrService } from 'src/modules/restaurants/services/qr.service';
+import { QrDto } from '../dto/responses/qr.dto';
 
 @Controller('restaurants')
 export class RestaurantsController {
-  constructor(private readonly restaurantsService: RestaurantsService) { }
+  constructor(
+    private readonly restaurantsService: RestaurantsService,
+    private readonly qrService: QrService,
+  ) { }
 
   @Post()
   async create(@Body() createRestaurantDto: CreateRestaurantDto, @CurrentUser() user: User): Promise<RestaurantDto> {
@@ -63,4 +68,16 @@ export class RestaurantsController {
     return RestaurantDto.fromPrisma(restaurant);
   }
 
+  @Get(':id/qr')
+  async generateQR(@Param('id') id: string, @CurrentUser() user: User): Promise<QrDto> {
+    const restaurant = await this.restaurantsService.findById(id, user.id);
+
+    if (!restaurant) {
+      throw new NotFoundException('Restaurant not found');
+    }
+
+    const qrCode = await this.qrService.generateCode(restaurant.id, restaurant.slug);
+
+    return { code: qrCode };
+  }
 }

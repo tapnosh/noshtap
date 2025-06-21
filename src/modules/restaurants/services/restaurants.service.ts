@@ -201,6 +201,16 @@ export class RestaurantsService {
         });
     }
 
+    async findById(id: string, userId: string): Promise<Restaurant | null> {
+        return this.prisma.restaurant.findUnique({
+            where: {
+                id,
+                ownerId: userId,
+                is_deleted: false
+            },
+        });
+    }
+
     private getTheme(theme_id: string | undefined, theme: string | undefined, userId: string): Prisma.RestaurantThemeCreateNestedOneWithoutRestaurantsInput {
         if (theme_id) {
             return { connect: { id: theme_id } };
