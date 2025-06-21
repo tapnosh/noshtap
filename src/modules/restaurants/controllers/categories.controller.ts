@@ -5,7 +5,7 @@ import { RestaurantCategory } from '@prisma/client';
 import { Public } from 'src/decorators/public.decorator';
 
 
-@Controller('restaurants/categories')
+@Controller('categories')
 export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) { }
 
