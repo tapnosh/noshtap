@@ -112,7 +112,6 @@ model RestaurantMenu {
   restaurant Restaurant @relation(fields: [restaurant_id], references: [id])
 
   @@index([restaurant_id, is_deleted(false)])
-  @@index([is_deleted(false)])
 }
 
 model QrCode {

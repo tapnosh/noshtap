@@ -88,6 +88,7 @@ export class MenusService {
     async findAll(restaurantId: string, userId: string): Promise<RestaurantMenu[]> {
         return this.prisma.restaurantMenu.findMany({
             where: {
+                restaurant_id: restaurantId,
                 is_deleted: false,
                 restaurant: {
                     id: restaurantId,
@@ -101,6 +102,7 @@ export class MenusService {
     async findLatest(restaurantId: string): Promise<RestaurantMenu | null> {
         return this.prisma.restaurantMenu.findFirst({
             where: {
+                restaurant_id: restaurantId,
                 is_deleted: false,
                 restaurant: {
                     id: restaurantId,

@@ -11,7 +11,4 @@ ALTER TABLE "RestaurantMenu" DROP COLUMN "owner_id";
 CREATE INDEX "RestaurantMenu_restaurant_id_is_deleted_idx" ON "RestaurantMenu"("restaurant_id", "is_deleted");
 
 -- CreateIndex
-CREATE INDEX "RestaurantMenu_is_deleted_idx" ON "RestaurantMenu"("is_deleted");
-
--- CreateIndex
 CREATE INDEX "RestaurantTheme_ownerId_idx" ON "RestaurantTheme"("ownerId");
