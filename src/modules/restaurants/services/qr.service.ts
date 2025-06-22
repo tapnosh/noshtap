@@ -10,9 +10,11 @@ export class QrService {
 
     async generateCode(restaurantId: string, code: string): Promise<string> {
         const baseUrl = this.configService.get('BASE_URL');
+        const frontendUrl = this.configService.get('FRONTEND_URL');
         const endpointPath = this.getEndpointPath(code);
 
         const url = `${baseUrl}${endpointPath}`;
+        const redirectUrl = `${frontendUrl}${endpointPath}`;
 
         const qrCode = await QRCode.toDataURL(url);
 
@@ -24,7 +26,7 @@ export class QrService {
             create: {
                 restaurant_id: restaurantId,
                 code: code,
-                redirect_url: url,
+                redirect_url: redirectUrl,
             },
             update: {}
         });
