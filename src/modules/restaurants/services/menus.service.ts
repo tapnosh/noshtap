@@ -23,7 +23,7 @@ export class MenusService {
 
         return await this.prisma.restaurantMenu.create({
             data: {
-                name: createMenuDto.name,
+                name: createMenuDto.name || this.generateRandomName(),
                 schema: createMenuDto.schema,
                 restaurant: {
                     connect: {
@@ -114,4 +114,24 @@ export class MenusService {
             },
         });
     }
+
+    private generateRandomName(): string {
+        const adjectives = [
+            'Delicious', 'Fresh', 'Seasonal', 'Chef\'s', 'Special', 'Premium', 'Signature',
+            'Classic', 'Modern', 'Traditional', 'Gourmet', 'Artisan', 'House', 'Daily',
+            'Weekly', 'Featured', 'Popular', 'Recommended', 'Exclusive', 'Limited'
+        ];
+
+        const menuTypes = [
+            'Menu', 'Selection', 'Collection', 'Offerings', 'Specials', 'Favorites',
+            'Choices', 'Options', 'Dishes', 'Cuisine', 'Delights', 'Treats',
+            'Selections', 'Creations', 'Picks', 'Recommendations'
+        ];
+
+        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const randomMenuType = menuTypes[Math.floor(Math.random() * menuTypes.length)];
+
+        return `${randomAdjective} ${randomMenuType}`;
+    }
+
 }
