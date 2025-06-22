@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateRestaurantDto } from "../dto/requests/create-restaurant.dto";
 import { UpdateRestaurantDto } from "../dto/requests/update-restaurant.dto";
-import { Restaurant, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { kRestaurantWithRelationsInclude, RestaurantWithRelations } from "../types/restaurant_with_relations";
 
@@ -93,7 +93,6 @@ export class RestaurantsService {
                     content_disposition: image.contentDisposition,
                 })),
             },
-
             categories: {
                 disconnect: restaurant.categories.map((cat) => ({
                     id: cat.id,
@@ -104,6 +103,14 @@ export class RestaurantsService {
                     },
                 })),
             },
+            address: {
+                update: dto.address ? {
+                    name: dto.address.name,
+                    lat: dto.address.lat,
+                    lng: dto.address.lng
+                } : undefined,
+                delete: !dto.address,
+            }
         };
 
         try {
@@ -167,10 +174,10 @@ export class RestaurantsService {
     }
 
     async findBySlug(slug: string, userId?: string): Promise<RestaurantWithRelations | null> {
-        const where = userId 
+        const where = userId
             ? { slug, is_deleted: false, ownerId: userId }
             : { slug, is_deleted: false };
-            
+
         return this.prisma.restaurant.findUnique({
             where,
             include: kRestaurantWithRelationsInclude
