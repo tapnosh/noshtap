@@ -16,12 +16,17 @@ export class QrService {
 
         const qrCode = await QRCode.toDataURL(url);
 
-        await this.prisma.qrCode.create({
-            data: {
+        await this.prisma.qrCode.upsert({
+            where: {
+                code,
+                is_deleted: false,
+            },
+            create: {
                 restaurant_id: restaurantId,
                 code: code,
                 redirect_url: url,
-            }
+            },
+            update: {}
         });
 
         return qrCode;
