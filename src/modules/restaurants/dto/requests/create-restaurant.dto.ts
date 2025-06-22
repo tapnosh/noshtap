@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID, Matches, MaxLength, ValidateNested } from 'class-validator';
 import { CreateAddressDto } from './create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateImageDto } from './create-image.dto';
@@ -25,6 +25,7 @@ export class CreateRestaurantDto {
    * @example "20260cfc-d1b6-47c0-8946-01f0f238eaeb"
    */
   @IsUUID()
+  @IsOptional()
   theme_id?: string;
 
   /**
@@ -33,15 +34,17 @@ export class CreateRestaurantDto {
    * @example "#3B82F6"
    */
   @IsString()
-  @MaxLength(255)
+  @IsOptional()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Invalid HEX color code' })
   theme?: string;
 
   /**
    * The images of the restaurant
-   * @example ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+   * @example { "url": "https://example.com/image1.jpg", "downloadUrl": "https://example.com/image1.jpg", "pathname": "image1.jpg", "contentType": "image/jpeg", "contentDisposition": "inline" }
    */
   @IsArray()
-  @IsString({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => CreateImageDto)
   images: CreateImageDto[];
 
   /**
@@ -58,5 +61,6 @@ export class CreateRestaurantDto {
    */
   @ValidateNested()
   @Type(() => CreateAddressDto)
-  address: CreateAddressDto;
+  @IsOptional()
+  address?: CreateAddressDto;
 }
