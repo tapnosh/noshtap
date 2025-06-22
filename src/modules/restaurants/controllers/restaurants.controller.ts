@@ -2,7 +2,6 @@ import { BadRequestException, Body, Controller, Get, Post, Put, Delete, Param, N
 import { RestaurantsService } from '../services/restaurants.service';
 import { CreateRestaurantDto } from '../dto/requests/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/requests/update-restaurant.dto';
-import { Public } from 'src/decorators/public.decorator';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { User } from '@clerk/backend';
 import { RestaurantDto } from '../dto/responses/restaurant.dto';
@@ -49,26 +48,13 @@ export class RestaurantsController {
   }
 
   @Get()
-  @Public()
-  async findAll(): Promise<RestaurantDto[]> {
-    const restaurants = await this.restaurantsService.findAll();
+  async findAll(@CurrentUser() user: User): Promise<RestaurantDto[]> {
+    const restaurants = await this.restaurantsService.findAllForUser(user.id);
 
     return restaurants.map(restaurant => RestaurantDto.fromPrisma(restaurant));
   }
 
-  @Get(':slug')
-  @Public()
-  async findOne(@Param('slug') slug: string): Promise<RestaurantDto> {
-    const restaurant = await this.restaurantsService.findOne(slug);
-
-    if (!restaurant) {
-      throw new NotFoundException('Restaurant not found');
-    }
-
-    return RestaurantDto.fromPrisma(restaurant);
-  }
-
-  @Get(':id/qr')
+  @Get(':id/generate_qr')
   async generateQR(@Param('id') id: string, @CurrentUser() user: User): Promise<QrDto> {
     const restaurant = await this.restaurantsService.findById(id, user.id);
 
