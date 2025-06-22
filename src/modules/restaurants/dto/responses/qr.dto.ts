@@ -1,3 +1,3 @@
 export class QrDto {
-    code: string;
+    url: string;
 }

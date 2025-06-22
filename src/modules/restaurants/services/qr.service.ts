@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { QrCode } from "@prisma/client";
-import * as QRCode from 'qrcode';
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -11,8 +10,6 @@ export class QrService {
     async generateCode(restaurantId: string, code: string): Promise<string> {
         const url = this.getEndpointUrl(code);
         const redirectUrl = this.getRedirectUrl(code);
-
-        const qrCode = await QRCode.toDataURL(url);
 
         await this.prisma.qrCode.upsert({
             where: {
@@ -27,7 +24,7 @@ export class QrService {
             update: {}
         });
 
-        return qrCode;
+        return url;
     }
 
     async findOne(code: string): Promise<QrCode | null> {
@@ -47,6 +44,6 @@ export class QrService {
 
     private getRedirectUrl(code: string) {
         const frontendUrl = this.configService.get('FRONTEND_URL');
-        return `${frontendUrl}/restaurants/${code}`;
+        return `${frontendUrl}/restaurants/${code}/menu`;
     }
 }

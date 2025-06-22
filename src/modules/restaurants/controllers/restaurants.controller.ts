@@ -84,8 +84,8 @@ export class RestaurantsController {
       throw new NotFoundException('Restaurant not found');
     }
 
-    const qrCode = await this.qrService.generateCode(restaurant.id, restaurant.slug);
+    const url = await this.qrService.generateCode(restaurant.id, restaurant.slug);
 
-    return { code: qrCode };
+    return { url: url };
   }
 }
