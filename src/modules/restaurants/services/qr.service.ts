@@ -37,6 +37,6 @@ export class QrService {
     }
 
     private getEndpointPath(path: string) {
-        return `/codes/${path}`;
+        return `/public_api/codes/${path}`;
     }
 }
