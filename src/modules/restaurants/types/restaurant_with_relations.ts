@@ -9,6 +9,15 @@ export type RestaurantWithRelations = Prisma.RestaurantGetPayload<{
             include: {
                 category: true,
             }
-        }
+        },
+        menus: {
+            where: {
+                is_deleted: false,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: 1,
+        },
     }
 }>;

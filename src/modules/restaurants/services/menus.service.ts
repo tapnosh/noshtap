@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateMenuDto } from "../dto/create-menu.dto";
-import { UpdateMenuDto } from "../dto/update-menu.dto";
+import { CreateMenuDto } from "../dto/requests/create-menu.dto";
+import { UpdateMenuDto } from "../dto/requests/update-menu.dto";
 import { RestaurantMenu } from "@prisma/client";
 
 @Injectable()

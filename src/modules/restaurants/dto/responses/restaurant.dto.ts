@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { AddressDto } from "./address.dto";
 import { CategoryDto } from "./category.dto";
 import { ImageDto } from "./image.dto";
@@ -9,10 +8,12 @@ export class RestaurantDto {
     id: string;
     name: string;
     description: string;
+    slug: string;
     theme: RestaurantThemeDto;
     address?: AddressDto;
     images: ImageDto[];
     categories: CategoryDto[];
+    menu?: Record<string, any>;
 
     isOwner?: boolean;
 
@@ -21,6 +22,7 @@ export class RestaurantDto {
             id: restaurant.id,
             name: restaurant.name,
             description: restaurant.description,
+            slug: restaurant.slug,
             theme: {
                 id: restaurant.theme.id,
                 color: restaurant.theme.color,
@@ -47,6 +49,7 @@ export class RestaurantDto {
                     description: category.category.description,
                 };
             }),
+            menu: restaurant.menus[0]?.schema as Record<string, any>,
             isOwner: userId ? restaurant.ownerId === userId : undefined,
         };
     }
