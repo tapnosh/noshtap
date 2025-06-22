@@ -56,6 +56,6 @@ export class CreateMenuDto {
     *   ]
     * }
     */
-    @IsJSON()
+    @IsObject()
     schema: Record<string, any>;
 }
