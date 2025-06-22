@@ -4,7 +4,7 @@ import { CreateRestaurantDto } from "../dto/requests/create-restaurant.dto";
 import { UpdateRestaurantDto } from "../dto/requests/update-restaurant.dto";
 import { Restaurant, Prisma } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
-import { RestaurantWithRelations } from "../types/restaurant_with_relations";
+import { kRestaurantWithRelationsInclude, RestaurantWithRelations } from "../types/restaurant_with_relations";
 
 @Injectable()
 export class RestaurantsService {
@@ -41,18 +41,7 @@ export class RestaurantsService {
         };
 
         try {
-            const restaurant = await this.prisma.restaurant.create({
-                data: data, include: {
-                    theme: true,
-                    address: true,
-                    images: true,
-                    categories: {
-                        include: {
-                            category: true,
-                        }
-                    }
-                }
-            });
+            const restaurant = await this.prisma.restaurant.create({ data: data, include: kRestaurantWithRelationsInclude });
 
             return restaurant;
 
@@ -121,16 +110,7 @@ export class RestaurantsService {
             const restaurant = await this.prisma.restaurant.update({
                 where: { id },
                 data: data,
-                include: {
-                    theme: true,
-                    address: true,
-                    images: true,
-                    categories: {
-                        include: {
-                            category: true,
-                        },
-                    },
-                },
+                include: kRestaurantWithRelationsInclude,
             });
 
             return restaurant;
@@ -152,16 +132,7 @@ export class RestaurantsService {
         const restaurant = await this.prisma.restaurant.update({
             where: { id, ownerId: userId },
             data: { is_deleted: true },
-            include: {
-                theme: true,
-                address: true,
-                images: true,
-                categories: {
-                    include: {
-                        category: true,
-                    }
-                }
-            }
+            include: kRestaurantWithRelationsInclude
         });
 
         if (!restaurant) {
@@ -172,48 +143,21 @@ export class RestaurantsService {
     async findAll(): Promise<RestaurantWithRelations[]> {
         return this.prisma.restaurant.findMany({
             where: { is_deleted: false },
-            include: {
-                theme: true,
-                address: true,
-                images: true,
-                categories: {
-                    include: {
-                        category: true,
-                    }
-                }
-            }
+            include: kRestaurantWithRelationsInclude
         });
     }
 
     async findAllForUser(userId: string): Promise<RestaurantWithRelations[]> {
         return this.prisma.restaurant.findMany({
             where: { is_deleted: false, ownerId: userId },
-            include: {
-                theme: true,
-                address: true,
-                images: true,
-                categories: {
-                    include: {
-                        category: true,
-                    }
-                }
-            }
+            include: kRestaurantWithRelationsInclude
         });
     }
 
     async findOne(slug: string): Promise<RestaurantWithRelations | null> {
         return this.prisma.restaurant.findUnique({
             where: { slug, is_deleted: false },
-            include: {
-                theme: true,
-                address: true,
-                images: true,
-                categories: {
-                    include: {
-                        category: true,
-                    }
-                }
-            }
+            include: kRestaurantWithRelationsInclude
         });
     }
 
