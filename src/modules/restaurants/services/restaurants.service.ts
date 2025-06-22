@@ -154,20 +154,26 @@ export class RestaurantsService {
         });
     }
 
-    async findOne(slug: string): Promise<RestaurantWithRelations | null> {
-        return this.prisma.restaurant.findUnique({
-            where: { slug, is_deleted: false },
-            include: kRestaurantWithRelationsInclude
-        });
-    }
 
-    async findById(id: string, userId: string): Promise<Restaurant | null> {
+    async findById(id: string, userId: string): Promise<RestaurantWithRelations | null> {
         return this.prisma.restaurant.findUnique({
             where: {
                 id,
                 ownerId: userId,
                 is_deleted: false
             },
+            include: kRestaurantWithRelationsInclude
+        });
+    }
+
+    async findBySlug(slug: string, userId?: string): Promise<RestaurantWithRelations | null> {
+        const where = userId 
+            ? { slug, is_deleted: false, ownerId: userId }
+            : { slug, is_deleted: false };
+            
+        return this.prisma.restaurant.findUnique({
+            where,
+            include: kRestaurantWithRelationsInclude
         });
     }
 

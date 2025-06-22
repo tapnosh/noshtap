@@ -54,6 +54,28 @@ export class RestaurantsController {
     return restaurants.map(restaurant => RestaurantDto.fromPrisma(restaurant));
   }
 
+  @Get(':id')
+  async findOne(@Param('id') id: string, @CurrentUser() user: User): Promise<RestaurantDto> {
+    const restaurant = await this.restaurantsService.findById(id, user.id);
+
+    if (!restaurant) {
+      throw new NotFoundException('Restaurant not found');
+    }
+
+    return RestaurantDto.fromPrisma(restaurant);
+  }
+
+  @Get('slug/:slug')
+  async findOneBySlug(@Param('slug') slug: string, @CurrentUser() user: User): Promise<RestaurantDto> {
+    const restaurant = await this.restaurantsService.findBySlug(slug, user.id);
+
+    if (!restaurant) {
+      throw new NotFoundException('Restaurant not found');
+    }
+
+    return RestaurantDto.fromPrisma(restaurant);
+  }
+
   @Get(':id/generate_qr')
   async generateQR(@Param('id') id: string, @CurrentUser() user: User): Promise<QrDto> {
     const restaurant = await this.restaurantsService.findById(id, user.id);
