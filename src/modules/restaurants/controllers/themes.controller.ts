@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ThemesService } from '../services/themes.service';
 import { CreateThemeDto } from '../dto/requests/create-theme.dto';
-import { Public } from 'src/decorators/public.decorator';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { User } from '@clerk/backend';
 

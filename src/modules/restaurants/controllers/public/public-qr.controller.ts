@@ -1,19 +1,17 @@
-import { Controller, Get, NotFoundException, Param, Redirect, Res } from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param, Redirect } from "@nestjs/common";
 import { Public } from "src/decorators/public.decorator";
-import { RestaurantsService } from "../services/restaurants.service";
 import { ConfigService } from "@nestjs/config";
-import { QrService } from "../services/qr.service";
+import { QrService } from "../../services/qr.service";
 
-@Controller('codes')
-export class QrController {
+@Controller('public_api/codes')
+@Public()
+export class PublicQrController {
     constructor(
-        private readonly configService: ConfigService,
         private readonly qrService: QrService,
     ) { }
 
     @Get(':code')
     @Redirect()
-    @Public()
     async redirect(@Param('code') code: string) {
         const qrCode = await this.qrService.findOne(code);
 

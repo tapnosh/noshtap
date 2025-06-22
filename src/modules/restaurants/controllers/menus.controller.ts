@@ -20,13 +20,6 @@ export class MenusController {
         return this.menusService.create(restaurantId, createMenuDto, user.id);
     }
 
-    @Get()
-    @Public()
-    findLatest(
-        @Param('restaurantId') restaurantId: string,
-    ): Promise<RestaurantMenu | null> {
-        return this.menusService.findLatest(restaurantId);
-    }
 
     @Put(':id')
     update(

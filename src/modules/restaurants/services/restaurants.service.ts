@@ -185,6 +185,22 @@ export class RestaurantsService {
         });
     }
 
+    async findAllForUser(userId: string): Promise<RestaurantWithRelations[]> {
+        return this.prisma.restaurant.findMany({
+            where: { is_deleted: false, ownerId: userId },
+            include: {
+                theme: true,
+                address: true,
+                images: true,
+                categories: {
+                    include: {
+                        category: true,
+                    }
+                }
+            }
+        });
+    }
+
     async findOne(slug: string): Promise<RestaurantWithRelations | null> {
         return this.prisma.restaurant.findUnique({
             where: { slug, is_deleted: false },
