@@ -9,12 +9,8 @@ export class QrService {
     constructor(private readonly configService: ConfigService, private readonly prisma: PrismaService) { }
 
     async generateCode(restaurantId: string, code: string): Promise<string> {
-        const baseUrl = this.configService.get('BASE_URL');
-        const frontendUrl = this.configService.get('FRONTEND_URL');
-        const endpointPath = this.getEndpointPath(code);
-
-        const url = `${baseUrl}${endpointPath}`;
-        const redirectUrl = `${frontendUrl}${endpointPath}`;
+        const url = this.getEndpointUrl(code);
+        const redirectUrl = this.getRedirectUrl(code);
 
         const qrCode = await QRCode.toDataURL(url);
 
@@ -43,7 +39,14 @@ export class QrService {
         });
     }
 
-    private getEndpointPath(path: string) {
-        return `/public_api/codes/${path}`;
+    private getEndpointUrl(code: string) {
+        const baseUrl = this.configService.get('BASE_URL');
+
+        return `${baseUrl}/public_api/codes/${code}`;
+    }
+
+    private getRedirectUrl(code: string) {
+        const frontendUrl = this.configService.get('FRONTEND_URL');
+        return `${frontendUrl}/restaurants/${code}`;
     }
 }
