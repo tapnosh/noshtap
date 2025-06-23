@@ -44,7 +44,6 @@ export class RestaurantsService {
             const restaurant = await this.prisma.restaurant.create({ data: data, include: kRestaurantWithRelationsInclude });
 
             return restaurant;
-
         } catch (error) {
             if (this.isSlugConflictError(error)) {
                 return this.create(createRestaurantDto, userId, true);
@@ -84,7 +83,7 @@ export class RestaurantsService {
             description: dto.description,
             theme: { connect: { id: dto.theme_id } },
             images: {
-                disconnect: restaurant.images.map((img) => ({ id: img.id })),
+                disconnect: restaurant.images.length > 0 ? restaurant.images.map((img) => ({ id: img.id })) : undefined,
                 create: dto.images.map((image) => ({
                     image_url: image.url,
                     download_url: image.downloadUrl,
@@ -94,9 +93,9 @@ export class RestaurantsService {
                 })),
             },
             categories: {
-                disconnect: restaurant.categories.map((cat) => ({
+                disconnect: restaurant.categories.length > 0 ? restaurant.categories.map((cat) => ({
                     id: cat.id,
-                })),
+                })) : undefined,
                 create: dto.category_ids.map((categoryId) => ({
                     category: {
                         connect: { id: categoryId },
@@ -197,7 +196,7 @@ export class RestaurantsService {
             .trim()
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_-]+/g, '-')
+            .replace(/[\s_-]+/g, '-d')
             .replace(/^-+|-+$/g, '');
 
         if (randomSuffix) {

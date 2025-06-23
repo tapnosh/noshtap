@@ -1,4 +1,4 @@
-import { IsString, MaxLength, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateImageDto {
     /**
