@@ -108,7 +108,7 @@ export class RestaurantsService {
                     lat: dto.address.lat,
                     lng: dto.address.lng
                 } : undefined,
-                delete: !dto.address,
+                disconnect: dto.address ? undefined : true,
             }
         };
 
