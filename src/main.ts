@@ -16,7 +16,9 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'https://tapnosh.com', // TODO: Add frontend url from env
+      'https://tapnosh.com',
+      'https://www.tapnosh.com',
+      process.env.FRONTEND_URL,
     ],
     credentials: true,
   });
