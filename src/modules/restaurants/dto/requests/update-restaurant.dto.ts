@@ -1,96 +1,109 @@
-import { IsArray, IsOptional, IsString, IsUUID, MaxLength, ValidateNested, IsUrl } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID, MaxLength, ValidateNested, IsUrl, IsEnum } from 'class-validator';
 import { CreateImageDto } from './create-image.dto';
 import { Type } from 'class-transformer';
 import { CreateAddressDto } from './create-address.dto';
+import { PriceRange } from '@prisma/client';
 
 export class UpdateRestaurantDto {
-    /**
-    * The name of the restaurant
-    * @example "Delicious Restaurant"
-    */
-    @IsString()
-    @MaxLength(255)
-    name: string;
-
-    /**
-    * The description of the restaurant
-    * @example "A cozy place with amazing food"
-    */
-    @IsString()
-    description: string;
-
-    /**
-    * The ID of the restaurant theme
-    * [INFO] Has precedence over theme if provided
-    * @example "20260cfc-d1b6-47c0-8946-01f0f238eaeb"
-    */
-    @IsUUID()
-    @IsOptional()
-    theme_id?: string;
-
-    /**
-    * The images of the restaurant
-    * @example { "url": "https://example.com/image1.jpg", "downloadUrl": "https://example.com/image1.jpg", "pathname": "image1.jpg", "contentType": "image/jpeg", "contentDisposition": "inline" }
-    */
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => CreateImageDto)
-    images: CreateImageDto[];
-
-    /**
-    * The categories of the restaurant
-    * @example ["20260cfc-d1b6-47c0-8946-01f0f238eaeb", "20260cfc-d1b6-47c0-8946-01f0f238eaeb"]
-    */
-    @IsArray()
-    @IsString({ each: true })
-    category_ids: string[];
-
-    /**
-     * The address of the restaurant
-     * @example {
-     *  "street": "ul. Długa 5",
-     *  "postalCode": "60-100",
-     *  "city": "Poznań",
-     *  "country": "Polska",
-     *  "lat": 52.406374,
-     *  "lng": 16.925168
-     * }
+     /**
+     * The name of the restaurant
+     * @example "Delicious Restaurant"
      */
-    @ValidateNested()
-    @Type(() => CreateAddressDto)
-    @IsOptional()
-    address?: CreateAddressDto;
+     @IsString()
+     @MaxLength(255)
+     name: string;
 
-    /**
-     * Contact phone number
-     * @example "+48 123 456 789"
+     /**
+     * The description of the restaurant
+     * @example "A cozy place with amazing food"
      */
-    @IsOptional()
-    @IsString()
-    @MaxLength(32)
-    phoneNumber?: string;
+     @IsString()
+     description: string;
 
-    /**
-     * Facebook page URL
-     * @example "https://www.facebook.com/my-restaurant"
+     /**
+     * The ID of the restaurant theme
+     * [INFO] Has precedence over theme if provided
+     * @example "20260cfc-d1b6-47c0-8946-01f0f238eaeb"
      */
-    @IsOptional()
-    @IsUrl()
-    facebookUrl?: string;
+     @IsUUID()
+     @IsOptional()
+     theme_id?: string;
 
-    /**
-     * Instagram profile URL
-     * @example "https://www.instagram.com/my-restaurant"
+     /**
+     * The images of the restaurant
+     * @example { "url": "https://example.com/image1.jpg", "downloadUrl": "https://example.com/image1.jpg", "pathname": "image1.jpg", "contentType": "image/jpeg", "contentDisposition": "inline" }
      */
-    @IsOptional()
-    @IsUrl()
-    instagramUrl?: string;
-    
-    /**
-     * Reservation site URL
-     * @example "https://www.zjedz.my/my-restaurant"
+     @IsArray()
+     @ValidateNested({ each: true })
+     @Type(() => CreateImageDto)
+     images: CreateImageDto[];
+
+     /**
+     * The categories of the restaurant
+     * @example ["20260cfc-d1b6-47c0-8946-01f0f238eaeb", "20260cfc-d1b6-47c0-8946-01f0f238eaeb"]
      */
-    @IsOptional()
-    @IsUrl()
-    reservationUrl?: string;
+     @IsArray()
+     @IsString({ each: true })
+     category_ids: string[];
+
+     /**
+      * The address of the restaurant
+ <<<<<<< HEAD
+      * @example {
+      *  "street": "ul. Długa 5",
+      *  "postalCode": "60-100",
+      *  "city": "Poznań",
+      *  "country": "Polska",
+      *  "lat": 52.406374,
+      *  "lng": 16.925168
+      * }
+ =======
+      * @example { "name": "123 Main St", "lat": 37.774929, "lng": -122.419416 }
+ >>>>>>> 1e3149f (feat: add price range)
+      */
+     @ValidateNested()
+     @Type(() => CreateAddressDto)
+     @IsOptional()
+     address?: CreateAddressDto;
+
+     /**
+      * Contact phone number
+      * @example "+48 123 456 789"
+      */
+     @IsOptional()
+     @IsString()
+     @MaxLength(32)
+     phoneNumber?: string;
+
+     /**
+      * Facebook page URL
+      * @example "https://www.facebook.com/my-restaurant"
+      */
+     @IsOptional()
+     @IsUrl()
+     facebookUrl?: string;
+
+     /**
+      * Instagram profile URL
+      * @example "https://www.instagram.com/my-restaurant"
+      */
+     @IsOptional()
+     @IsUrl()
+     instagramUrl?: string;
+
+     /**
+      * Reservation site URL
+      * @example "https://www.zjedz.my/my-restaurant"
+      */
+     @IsOptional()
+     @IsUrl()
+     reservationUrl?: string;
+
+     /**
+      * The price range of the restaurant
+      * @example "low" | "mid" | "high"
+      */
+     @IsEnum(PriceRange)
+     @IsOptional()
+     priceRange?: PriceRange;
 }

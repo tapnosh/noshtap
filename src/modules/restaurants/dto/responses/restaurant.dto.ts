@@ -3,6 +3,7 @@ import { CategoryDto } from "./category.dto";
 import { ImageDto } from "./image.dto";
 import { RestaurantThemeDto } from "./restaurant-theme.dto";
 import { RestaurantWithRelations } from "../../types/restaurant_with_relations";
+import { PriceRange } from "@prisma/client";
 
 export class RestaurantDto {
     id: string;
@@ -18,6 +19,7 @@ export class RestaurantDto {
     facebookUrl?: string | null;
     instagramUrl?: string | null;
     reservationUrl?: string | null;
+    priceRange?: PriceRange | null;
     isOwner?: boolean;
 
     static fromPrisma(restaurant: RestaurantWithRelations, userId?: string): RestaurantDto {
@@ -61,12 +63,11 @@ export class RestaurantDto {
                 };
             }),
             menu: restaurant.menus[0]?.schema as Record<string, any>,
-
             phoneNumber: restaurant.phoneNumber,
             facebookUrl: restaurant.facebookUrl,
             instagramUrl: restaurant.instagramUrl,
             reservationUrl: restaurant.reservationUrl,
-            
+            priceRange: restaurant.priceRange,
             isOwner: userId ? restaurant.ownerId === userId : undefined,
         };
     }
