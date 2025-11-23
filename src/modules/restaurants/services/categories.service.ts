@@ -124,7 +124,7 @@ export class CategoriesService {
             case 'food_type':
                 return kFoodType;
             default:
-                return [];
+                return [...kAllergen, ...kCuisine, ...kFoodType];
         }
     }
 }
