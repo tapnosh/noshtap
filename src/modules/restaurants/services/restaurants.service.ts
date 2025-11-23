@@ -5,21 +5,31 @@ import { UpdateRestaurantDto } from "../dto/requests/update-restaurant.dto";
 import { Prisma } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { kRestaurantWithRelationsInclude, RestaurantWithRelations } from "../types/restaurant_with_relations";
+import { count } from "console";
 
 @Injectable()
 export class RestaurantsService {
     constructor(private prisma: PrismaService) { }
 
     async create(createRestaurantDto: CreateRestaurantDto, userId: string, randomSuffix: boolean = false): Promise<RestaurantWithRelations> {
+        const { street, postalCode, city, country, lat, lng } = createRestaurantDto.address;
+        const fullAddress = `${street}, ${postalCode}, ${city}, ${country}`;
         const data: Prisma.RestaurantCreateInput = {
             slug: this.createSlug(createRestaurantDto.name, randomSuffix),
             ownerId: userId,
             name: createRestaurantDto.name,
             description: createRestaurantDto.description,
             theme: this.getTheme(createRestaurantDto.theme_id, createRestaurantDto.theme, userId),
+            phoneNumber: createRestaurantDto.phoneNumber,
+            facebookUrl: createRestaurantDto.facebookUrl,
+            instagramUrl: createRestaurantDto.instagramUrl,
             address: createRestaurantDto.address ? {
                 create: {
-                    name: createRestaurantDto.address.name,
+                    name: fullAddress,
+                    street: createRestaurantDto.address.street,
+                    postalCode: createRestaurantDto.address.postalCode,
+                    city: createRestaurantDto.address.city,
+                    country: createRestaurantDto.address.country,
                     lat: createRestaurantDto.address.lat,
                     lng: createRestaurantDto.address.lng,
                 }
@@ -77,11 +87,32 @@ export class RestaurantsService {
             throw new ForbiddenException('You do not have access to this restaurant.');
         }
 
+        const addressData = dto.address
+        ? (() => {
+            const { street, postalCode, city, country, lat, lng } = dto.address;
+            const fullAddress = `${street}, ${postalCode}, ${city}, ${country}`;
+
+            return {
+                update: {
+                    name: fullAddress,
+                    street,
+                    postalCode,
+                    city,
+                    lat,
+                    lng,                
+                },
+            };
+        })()
+        : undefined;
+
         const data: Prisma.RestaurantUpdateInput = {
             name: dto.name,
             slug: this.createSlug(dto.name, randomSuffix),
             description: dto.description,
             theme: { connect: { id: dto.theme_id } },
+            ...(dto.phoneNumber !== undefined && { phoneNumber: dto.phoneNumber }),
+            ...(dto.facebookUrl !== undefined && { facebookUrl: dto.facebookUrl }),
+            ...(dto.instagramUrl !== undefined && { instagramUrl: dto.instagramUrl }),
             images: {
                 disconnect: restaurant.images.length > 0 ? restaurant.images.map((img) => ({ id: img.id })) : undefined,
                 create: dto.images.map((image) => ({
@@ -102,14 +133,7 @@ export class RestaurantsService {
                     },
                 })),
             },
-            address: {
-                update: dto.address ? {
-                    name: dto.address.name,
-                    lat: dto.address.lat,
-                    lng: dto.address.lng
-                } : undefined,
-                disconnect: dto.address ? undefined : true,
-            }
+            address: addressData,
         };
 
         try {

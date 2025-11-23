@@ -14,6 +14,9 @@ export class RestaurantDto {
     images: ImageDto[];
     categories: CategoryDto[];
     menu?: Record<string, any>;
+    phoneNumber?: string | null;
+    facebookUrl?: string | null;
+    instagramUrl?: string | null;
 
     isOwner?: boolean;
 
@@ -30,6 +33,10 @@ export class RestaurantDto {
             address: !restaurant.address ? undefined : {
                 id: restaurant.address.id,
                 name: restaurant.address.name,
+                street: restaurant.address.street,
+                postalCode: restaurant.address.postalCode,
+                city: restaurant.address.city,
+                country: restaurant.address.country,                
                 lat: Number(restaurant.address.lat),
                 lng: Number(restaurant.address.lng)
             },
@@ -50,6 +57,11 @@ export class RestaurantDto {
                 };
             }),
             menu: restaurant.menus[0]?.schema as Record<string, any>,
+
+            phoneNumber: restaurant.phoneNumber,
+            facebookUrl: restaurant.facebookUrl,
+            instagramUrl: restaurant.instagramUrl,
+
             isOwner: userId ? restaurant.ownerId === userId : undefined,
         };
     }

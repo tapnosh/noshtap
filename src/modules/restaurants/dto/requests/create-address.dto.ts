@@ -2,13 +2,40 @@ import { IsString, MaxLength, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateAddressDto {
     /**
-     * The name of the address
-     * @example "123 Main St"
+     * Street with number
+     * @example "ul. Długa 5"
      */
     @IsString()
     @IsNotEmpty()
     @MaxLength(255)
-    name: string;
+    street: string;
+
+    /**
+     * Postal code
+     * @example "60-100"
+     */
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(10)
+    postalCode: string;
+
+    /**
+     * City / locality
+     * @example "Poznań"
+     */
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(100)
+    city: string;
+
+    /**
+     * Country
+     * @example "Polska"
+     */
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(50)
+    country: string;
 
     /**
      * The latitude of the address
