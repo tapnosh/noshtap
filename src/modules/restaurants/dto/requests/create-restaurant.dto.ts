@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, IsUUID, Matches, MaxLength, ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID, Matches, MaxLength, ValidateNested, IsUrl } from 'class-validator';
 import { CreateAddressDto } from './create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateImageDto } from './create-image.dto';
@@ -57,10 +57,50 @@ export class CreateRestaurantDto {
 
   /**
    * The address of the restaurant
-   * @example { "name": "123 Main St", "lat": 37.774929, "lng": -122.419416 }
+   * @example {
+   *  "street": "ul. Długa 5",
+   *  "postalCode": "60-100",
+   *  "city": "Poznań",
+   *  "country": "Polska",
+   *  "lat": 52.406374,
+   *  "lng": 16.925168
+   * }
    */
   @ValidateNested()
   @Type(() => CreateAddressDto)
+  // @IsOptional()
+  address: CreateAddressDto;
+
+  /**
+   * Contact phone number
+   * @example "+48 123 456 789"
+   */
   @IsOptional()
-  address?: CreateAddressDto;
+  @IsString()
+  @MaxLength(32)
+  phoneNumber?: string;
+
+  /**
+   * Facebook page URL
+   * @example "https://www.facebook.com/my-restaurant"
+   */
+  @IsOptional()
+  @IsUrl()
+  facebookUrl?: string;
+
+  /**
+   * Instagram profile URL
+   * @example "https://www.instagram.com/my-restaurant"
+   */
+  @IsOptional()
+  @IsUrl()
+  instagramUrl?: string;
+
+    /**
+     * Reservation site URL
+     * @example "https://www.zjedz.my/my-restaurant"
+     */
+    @IsOptional()
+    @IsUrl()
+    reservationUrl?: string;
 }

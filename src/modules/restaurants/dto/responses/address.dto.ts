@@ -1,6 +1,14 @@
 export class AddressDto {
     id: string;
-    name: string;
+    formattedAddress: string;
+    street: string;
+    streetNumber: string;
+    city: string;
+    state: string;
+    stateCode: string;
+    country: string;
+    countryCode: string;
+    postalCode: string;
     lat: number;
     lng: number;
 }
