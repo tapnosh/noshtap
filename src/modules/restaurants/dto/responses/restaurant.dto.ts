@@ -17,7 +17,7 @@ export class RestaurantDto {
     phoneNumber?: string | null;
     facebookUrl?: string | null;
     instagramUrl?: string | null;
-
+    reservationUrl?: string | null;
     isOwner?: boolean;
 
     static fromPrisma(restaurant: RestaurantWithRelations, userId?: string): RestaurantDto {
@@ -32,11 +32,15 @@ export class RestaurantDto {
             },
             address: !restaurant.address ? undefined : {
                 id: restaurant.address.id,
-                name: restaurant.address.name,
+                formattedAddress: restaurant.address.name,
                 street: restaurant.address.street,
-                postalCode: restaurant.address.postalCode,
+                streetNumber: restaurant.address.streetNumber,
                 city: restaurant.address.city,
-                country: restaurant.address.country,                
+                state: restaurant.address.state,
+                stateCode: restaurant.address.stateCode,
+                country: restaurant.address.country,
+                countryCode: restaurant.address.countryCode,
+                postalCode: restaurant.address.postalCode,
                 lat: Number(restaurant.address.lat),
                 lng: Number(restaurant.address.lng)
             },
@@ -61,7 +65,8 @@ export class RestaurantDto {
             phoneNumber: restaurant.phoneNumber,
             facebookUrl: restaurant.facebookUrl,
             instagramUrl: restaurant.instagramUrl,
-
+            reservationUrl: restaurant.reservationUrl,
+            
             isOwner: userId ? restaurant.ownerId === userId : undefined,
         };
     }

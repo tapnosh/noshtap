@@ -1,23 +1,31 @@
 import { IsString, MaxLength, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateAddressDto {
+
     /**
-     * Street with number
-     * @example "ul. Długa 5"
+     * Full formatted address from frontend (e.g. from Google API)
+     * @example "Długa 5, 60-100 Poznań, Wielkopolskie, Polska"
      */
     @IsString()
-    @IsNotEmpty()
     @MaxLength(255)
+    formattedAddress: string;
+
+    /**
+     * Street name
+     * @example "Długa"
+     */
+    @IsString()
+    @MaxLength(50)
     street: string;
 
     /**
-     * Postal code
-     * @example "60-100"
+     * Street number
+     * @example "5"
      */
     @IsString()
     @IsNotEmpty()
-    @MaxLength(10)
-    postalCode: string;
+    @MaxLength(50)
+    streetNumber: string;
 
     /**
      * City / locality
@@ -29,6 +37,22 @@ export class CreateAddressDto {
     city: string;
 
     /**
+     * State / region
+     * @example "Wielkopolskie"
+     */
+    @IsString()
+    @MaxLength(100)
+    state: string;
+
+    /**
+     * State code
+     * @example "WP"
+     */
+    @IsString()
+    @MaxLength(20)
+    stateCode: string;
+
+    /**
      * Country
      * @example "Polska"
      */
@@ -36,6 +60,22 @@ export class CreateAddressDto {
     @IsString()
     @MaxLength(50)
     country: string;
+    
+    /**
+     * Country code
+     * @example "PL"
+     */
+    @IsString()
+    @MaxLength(10)
+    countryCode: string;
+
+    /**
+     * Postal code
+     * @example "60-100"
+     */
+    @IsString()
+    @MaxLength(10)
+    postalCode: string;
 
     /**
      * The latitude of the address

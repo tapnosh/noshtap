@@ -96,4 +96,11 @@ export class CreateRestaurantDto {
   @IsUrl()
   instagramUrl?: string;
 
+    /**
+     * Reservation site URL
+     * @example "https://www.zjedz.my/my-restaurant"
+     */
+    @IsOptional()
+    @IsUrl()
+    reservationUrl?: string;
 }

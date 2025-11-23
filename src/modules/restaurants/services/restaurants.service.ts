@@ -5,15 +5,13 @@ import { UpdateRestaurantDto } from "../dto/requests/update-restaurant.dto";
 import { Prisma } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { kRestaurantWithRelationsInclude, RestaurantWithRelations } from "../types/restaurant_with_relations";
-import { count } from "console";
 
 @Injectable()
 export class RestaurantsService {
     constructor(private prisma: PrismaService) { }
 
     async create(createRestaurantDto: CreateRestaurantDto, userId: string, randomSuffix: boolean = false): Promise<RestaurantWithRelations> {
-        const { street, postalCode, city, country, lat, lng } = createRestaurantDto.address;
-        const fullAddress = `${street}, ${postalCode}, ${city}, ${country}`;
+        const { formattedAddress, street, streetNumber, city, state, stateCode, country, countryCode, postalCode, lat, lng, } = createRestaurantDto.address;
         const data: Prisma.RestaurantCreateInput = {
             slug: this.createSlug(createRestaurantDto.name, randomSuffix),
             ownerId: userId,
@@ -23,17 +21,23 @@ export class RestaurantsService {
             phoneNumber: createRestaurantDto.phoneNumber,
             facebookUrl: createRestaurantDto.facebookUrl,
             instagramUrl: createRestaurantDto.instagramUrl,
-            address: createRestaurantDto.address ? {
+            reservationUrl: createRestaurantDto.reservationUrl,
+            address: {
                 create: {
-                    name: fullAddress,
-                    street: createRestaurantDto.address.street,
-                    postalCode: createRestaurantDto.address.postalCode,
-                    city: createRestaurantDto.address.city,
-                    country: createRestaurantDto.address.country,
-                    lat: createRestaurantDto.address.lat,
-                    lng: createRestaurantDto.address.lng,
-                }
-            } : undefined,
+                    name: formattedAddress,
+                    street,
+                    streetNumber,
+                    city,
+                    state,
+                    stateCode,
+                    country,
+                    countryCode,
+                    postalCode,
+                    lat,
+                    lng,
+                },
+            },
+
             images: {
                 create: createRestaurantDto.images.map((image) => ({
                     image_url: image.url,
@@ -61,7 +65,6 @@ export class RestaurantsService {
 
             throw error;
         }
-
     }
 
     async update(
@@ -88,31 +91,32 @@ export class RestaurantsService {
         }
 
         const addressData = dto.address
-        ? (() => {
-            const { street, postalCode, city, country, lat, lng } = dto.address;
-            const fullAddress = `${street}, ${postalCode}, ${city}, ${country}`;
-
-            return {
-                update: {
-                    name: fullAddress,
-                    street,
-                    postalCode,
-                    city,
-                    lat,
-                    lng,                
+        ? {
+            update: {
+                name: dto.address.formattedAddress,
+                street: dto.address.street,
+                streetNumber: dto.address.streetNumber,
+                city: dto.address.city,
+                state: dto.address.state,
+                stateCode: dto.address.stateCode,
+                country: dto.address.country,
+                countryCode: dto.address.countryCode,
+                postalCode: dto.address.postalCode,
+                lat: dto.address.lat,
+                lng: dto.address.lng,                
                 },
-            };
-        })()
+            }
         : undefined;
 
         const data: Prisma.RestaurantUpdateInput = {
             name: dto.name,
             slug: this.createSlug(dto.name, randomSuffix),
             description: dto.description,
-            theme: { connect: { id: dto.theme_id } },
+            theme: { connect: { id: dto.theme_id } }, //theme id is optional should we fix it? fx. theme: dto.theme_id ? { connect: { id: dto.theme_id } } : undefined,
             ...(dto.phoneNumber !== undefined && { phoneNumber: dto.phoneNumber }),
             ...(dto.facebookUrl !== undefined && { facebookUrl: dto.facebookUrl }),
             ...(dto.instagramUrl !== undefined && { instagramUrl: dto.instagramUrl }),
+            ...(dto.reservationUrl !== undefined && { reservationUrl: dto.reservationUrl }),
             images: {
                 disconnect: restaurant.images.length > 0 ? restaurant.images.map((img) => ({ id: img.id })) : undefined,
                 create: dto.images.map((image) => ({
@@ -152,7 +156,6 @@ export class RestaurantsService {
 
             throw error;
         }
-
     }
 
     async delete(
@@ -226,7 +229,6 @@ export class RestaurantsService {
         if (randomSuffix) {
             return `${slug}-${this.generateRandomSuffix()}`;
         }
-
         return slug;
     }
 

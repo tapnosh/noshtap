@@ -14,24 +14,25 @@ datasource db {
 }
 
 model Restaurant {
-  id            String   @id @default(uuid())
-  name          String   @db.VarChar(255)
-  description   String
-  slug          String   @unique @db.VarChar(255)
-  theme_id      String
-  ownerId       String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  is_deleted    Boolean  @default(false)
-  phoneNumber   String?
-  facebookUrl   String?
-  instagramUrl  String?
-  theme         RestaurantTheme              @relation(fields: [theme_id], references: [id])
-  address       RestaurantAddress?
-  images        RestaurantImages[]
-  categories    RestaurantCategoryRelation[]
-  menus         RestaurantMenu[]
-  QrCode        QrCode[]
+  id              String   @id @default(uuid())
+  name            String   @db.VarChar(255)
+  description     String
+  slug            String   @unique @db.VarChar(255)
+  theme_id        String
+  ownerId         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  is_deleted      Boolean  @default(false)
+  phoneNumber     String?
+  facebookUrl     String?
+  instagramUrl    String?
+  reservationUrl  String?
+  theme           RestaurantTheme              @relation(fields: [theme_id], references: [id])
+  address         RestaurantAddress?
+  images          RestaurantImages[]
+  categories      RestaurantCategoryRelation[]
+  menus           RestaurantMenu[]
+  QrCode          QrCode[]
 
   @@unique([id, ownerId, is_deleted(false)])
   @@unique([id, is_deleted(false)])
@@ -44,9 +45,13 @@ model RestaurantAddress {
   restaurant_id String   @unique
   name          String
   street        String?
+  streetNumber  String?
   postalCode    String?
   city          String?
+  state         String?
+  stateCode     String?
   country       String?
+  countryCode   String?
   lat           Decimal
   lng           Decimal
   createdAt     DateTime @default(now())
