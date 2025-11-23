@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto } from '../dto/requests/create-category.dto';
 import { RestaurantCategory } from '@prisma/client';
 import { UpdateCategoryDto } from '../dto/requests/update-category.dto';
+import { CategoryDto } from '../dto/responses/category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -24,7 +25,7 @@ export class CategoriesController {
     }
 
     @Get()
-    findAll(): Promise<RestaurantCategory[]> {
-        return this.categoriesService.findAll();
+    findAll(@Query('type') type?: string): Promise<CategoryDto[]> {
+        return this.categoriesService.findAll(type);
     }
 }
