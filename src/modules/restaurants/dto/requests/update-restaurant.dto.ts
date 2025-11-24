@@ -48,7 +48,6 @@ export class UpdateRestaurantDto {
 
      /**
       * The address of the restaurant
- <<<<<<< HEAD
       * @example {
       *  "street": "ul. Długa 5",
       *  "postalCode": "60-100",
@@ -57,9 +56,6 @@ export class UpdateRestaurantDto {
       *  "lat": 52.406374,
       *  "lng": 16.925168
       * }
- =======
-      * @example { "name": "123 Main St", "lat": 37.774929, "lng": -122.419416 }
- >>>>>>> 1e3149f (feat: add price range)
       */
      @ValidateNested()
      @Type(() => CreateAddressDto)
