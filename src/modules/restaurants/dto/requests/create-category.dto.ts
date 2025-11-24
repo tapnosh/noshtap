@@ -1,4 +1,5 @@
-import { IsString, MaxLength } from 'class-validator';
+import { IsString, MaxLength, IsEnum } from 'class-validator';
+import { CategoryType } from '@prisma/client';
 
 export class CreateCategoryDto {
     /**
@@ -15,4 +16,11 @@ export class CreateCategoryDto {
      */
     @IsString()
     description: string;
+
+    /**
+     * The type of the category
+     * @example "cuisine"
+     */
+    @IsEnum(CategoryType)
+    type: CategoryType;
 }
