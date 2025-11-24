@@ -13,6 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PriceRange {
+  low
+  mid
+  high
+}
+
+enum CategoryType {
+  allergens
+  cuisine
+  food_type
+}
+
 model Restaurant {
   id              String   @id @default(uuid())
   name            String   @db.VarChar(255)
@@ -27,6 +39,7 @@ model Restaurant {
   facebookUrl     String?
   instagramUrl    String?
   reservationUrl  String?
+  priceRange      PriceRange?
   theme           RestaurantTheme              @relation(fields: [theme_id], references: [id])
   address         RestaurantAddress?
   images          RestaurantImages[]
@@ -89,13 +102,16 @@ model RestaurantTheme {
 }
 
 model RestaurantCategory {
-  id          String   @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
   description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  type        CategoryType
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   restaurants RestaurantCategoryRelation[]
+
+  @@index([type])
 }
 
 model RestaurantCategoryRelation {

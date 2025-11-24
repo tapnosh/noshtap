@@ -22,6 +22,7 @@ export class RestaurantsService {
             facebookUrl: createRestaurantDto.facebookUrl,
             instagramUrl: createRestaurantDto.instagramUrl,
             reservationUrl: createRestaurantDto.reservationUrl,
+            priceRange: createRestaurantDto.priceRange ?? undefined,
             address: {
                 create: {
                     name: formattedAddress,
@@ -91,27 +92,28 @@ export class RestaurantsService {
         }
 
         const addressData = dto.address
-        ? {
-            update: {
-                name: dto.address.formattedAddress,
-                street: dto.address.street,
-                streetNumber: dto.address.streetNumber,
-                city: dto.address.city,
-                state: dto.address.state,
-                stateCode: dto.address.stateCode,
-                country: dto.address.country,
-                countryCode: dto.address.countryCode,
-                postalCode: dto.address.postalCode,
-                lat: dto.address.lat,
-                lng: dto.address.lng,                
+            ? {
+                update: {
+                    name: dto.address.formattedAddress,
+                    street: dto.address.street,
+                    streetNumber: dto.address.streetNumber,
+                    city: dto.address.city,
+                    state: dto.address.state,
+                    stateCode: dto.address.stateCode,
+                    country: dto.address.country,
+                    countryCode: dto.address.countryCode,
+                    postalCode: dto.address.postalCode,
+                    lat: dto.address.lat,
+                    lng: dto.address.lng,
                 },
             }
-        : undefined;
+            : undefined;
 
         const data: Prisma.RestaurantUpdateInput = {
             name: dto.name,
             slug: this.createSlug(dto.name, randomSuffix),
             description: dto.description,
+            priceRange: dto.priceRange,
             theme: { connect: { id: dto.theme_id } }, //theme id is optional should we fix it? fx. theme: dto.theme_id ? { connect: { id: dto.theme_id } } : undefined,
             ...(dto.phoneNumber !== undefined && { phoneNumber: dto.phoneNumber }),
             ...(dto.facebookUrl !== undefined && { facebookUrl: dto.facebookUrl }),

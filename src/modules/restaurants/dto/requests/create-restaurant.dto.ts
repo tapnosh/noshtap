@@ -1,7 +1,8 @@
-import { IsArray, IsOptional, IsString, IsUUID, Matches, MaxLength, ValidateNested, IsUrl } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID, Matches, MaxLength, ValidateNested, IsUrl, IsEnum } from 'class-validator';
 import { CreateAddressDto } from './create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateImageDto } from './create-image.dto';
+import { PriceRange } from '@prisma/client';
 
 export class CreateRestaurantDto {
   /**
@@ -96,11 +97,19 @@ export class CreateRestaurantDto {
   @IsUrl()
   instagramUrl?: string;
 
-    /**
-     * Reservation site URL
-     * @example "https://www.zjedz.my/my-restaurant"
-     */
-    @IsOptional()
-    @IsUrl()
-    reservationUrl?: string;
+  /**
+   * Reservation site URL
+   * @example "https://www.zjedz.my/my-restaurant"
+   */
+  @IsOptional()
+  @IsUrl()
+  reservationUrl?: string;
+
+  /**
+   * The price range of the restaurant
+   * @example "low" | "mid" | "high"
+   */
+  @IsEnum(PriceRange)
+  @IsOptional()
+  priceRange?: PriceRange;
 }
