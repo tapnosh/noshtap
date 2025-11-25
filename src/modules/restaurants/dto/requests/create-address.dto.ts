@@ -60,7 +60,7 @@ export class CreateAddressDto {
     @IsString()
     @MaxLength(50)
     country: string;
-    
+
     /**
      * Country code
      * @example "PL"
