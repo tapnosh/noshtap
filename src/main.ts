@@ -30,7 +30,11 @@ async function bootstrap() {
     .addBearerAuth()
     .addSecurityRequirements('bearer')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  
+  const document = SwaggerModule.createDocument(app, config, {
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+    deepScanRoutes: true,
+  });
   SwaggerModule.setup('api', app, document, {
     customCssUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui.css',
     customJs: [
