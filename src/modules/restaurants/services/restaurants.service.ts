@@ -187,6 +187,69 @@ export class RestaurantsService {
         });
     }
 
+    async findAllWithLocation(
+        lat?: number,
+        lng?: number,
+        radiusKm?: number,
+    ): Promise<RestaurantWithRelations[]> {
+        const baseWhere: Prisma.RestaurantWhereInput = {
+            is_deleted: false,
+        };
+        
+        const hasGeo = 
+            lat !== undefined &&
+            lng !== undefined &&
+            radiusKm !== undefined;
+
+        let where: Prisma.RestaurantWhereInput = baseWhere;
+
+        if (hasGeo) {
+            const { minLat, maxLat, minLng, maxLng } = this.getBoundingBox(
+                lat!,
+                lng!,
+                radiusKm!,
+            );
+
+            where = {
+                ...baseWhere,
+                address: {
+                    lat: { gte: minLat, lte: maxLat },
+                    lng: { gte: minLng, lte: maxLng },
+                },
+            };
+        }
+        let restaurants = await this.prisma.restaurant.findMany({
+            where,
+            include: kRestaurantWithRelationsInclude,
+        });
+
+        if (!hasGeo) {
+            return restaurants;
+        }
+
+        const filtered = restaurants
+            .map((restaurant) => {
+                if (!restaurant.address) return null;
+
+                const distance = this.calculateDistanceKm(
+                    lat!,
+                    lng!,
+                    Number(restaurant.address.lat),
+                    Number(restaurant.address.lng),
+                );
+
+                return { restaurant, distance };
+            })
+            .filter(
+                (item): item is { restaurant: RestaurantWithRelations, distance: number } =>
+                    !!item && item.distance <= radiusKm!,
+            )
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0,100)
+            .map((item) => item.restaurant);
+
+        return filtered;
+    }
 
     async findById(id: string, userId: string): Promise<RestaurantWithRelations | null> {
         return this.prisma.restaurant.findUnique({
@@ -239,6 +302,42 @@ export class RestaurantsService {
             result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return result;
+    }
+
+    private getBoundingBox(lat: number, lng: number, radiusKm: number) {
+        const earthRadiusKm = 6371;
+
+        const dLat = (radiusKm / earthRadiusKm) * (180 / Math.PI);
+        const dLng = dLat / Math.cos((lat * Math.PI) / 180);
+
+        return {
+            minLat: lat - dLat,
+            maxLat: lat + dLat,
+            minLng: lng - dLng,
+            maxLng: lng + dLng,
+        };
+    }
+
+    private calculateDistanceKm(
+        lat1: number,
+        lng1: number,
+        lat2: number,
+        lng2: number,
+    ): number {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) + 
+            Math.cos(lat1 * Math.PI / 180) * 
+                Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng / 2) * 
+                Math.sin(dLng / 2);
+        
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c;        
     }
 
     private isSlugConflictError(error: any): boolean {

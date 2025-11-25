@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param, Query } from "@nestjs/common";
 import { RestaurantsService } from "../../services/restaurants.service";
 import { Public } from "src/decorators/public.decorator";
 import { RestaurantDto } from "../../dto/responses/restaurant.dto";
@@ -11,8 +11,21 @@ export class PublicRestaurantsController {
     ) { }
 
     @Get()
-    async findAll(): Promise<RestaurantDto[]> {
-        const restaurants = await this.restaurantsService.findAll();
+    async findAll(
+        @Query('lat') lat?: string,
+        @Query('lng') lng?: string,
+        @Query('radiusKm') radiusKm?: string,
+    ): Promise<RestaurantDto[]> {
+        
+        const numericLat = lat !== undefined ? Number(lat) : undefined;
+        const numericLng = lng !== undefined ? Number(lng) : undefined;
+        const numericRadiusKm = radiusKm !== undefined ? Number(radiusKm) : undefined;
+
+        const restaurants = await this.restaurantsService.findAllWithLocation(
+            numericLat,
+            numericLng,
+            numericRadiusKm,
+        );
 
         return restaurants.map(restaurant => RestaurantDto.fromPrisma(restaurant));
     }
