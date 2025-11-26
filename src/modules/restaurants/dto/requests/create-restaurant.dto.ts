@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, IsUUID, Matches, MaxLength, ValidateNested, IsUrl, IsEnum } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID, Matches, MaxLength, ValidateNested, IsUrl, IsEnum, IsNotEmpty } from 'class-validator';
 import { CreateAddressDto } from './create-address.dto';
 import { Type } from 'class-transformer';
 import { CreateImageDto } from './create-image.dto';
@@ -67,6 +67,7 @@ export class CreateRestaurantDto {
    *  "lng": 16.925168
    * }
    */
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => CreateAddressDto)
   address: CreateAddressDto;
