@@ -10,21 +10,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     transform: true,
-    forbidNonWhitelisted: true,
-    exceptionFactory: (errors) => {
-      const messages = errors.map((error) => {
-        const constraints = error.constraints;
-        if (constraints) {
-          return Object.values(constraints).join(', ');
-        }
-        return `${error.property} has invalid value`;
-      });
-      return new BadRequestException({
-        statusCode: 400,
-        message: messages.length > 0 ? messages : 'Validation failed',
-        error: 'Bad Request',
-      });
-    },
   }));
 
   // Enable CORS 
