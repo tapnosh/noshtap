@@ -69,7 +69,6 @@ export class CreateRestaurantDto {
    */
   @ValidateNested()
   @Type(() => CreateAddressDto)
-  // @IsOptional()
   address: CreateAddressDto;
 
   /**
