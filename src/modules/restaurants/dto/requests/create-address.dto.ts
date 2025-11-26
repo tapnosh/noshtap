@@ -1,7 +1,6 @@
 import { IsString, MaxLength, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateAddressDto {
-
     /**
      * Full formatted address from frontend (e.g. from Google API)
      * @example "Długa 5, 60-100 Poznań, Wielkopolskie, Polska"
