@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +10,21 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     transform: true,
+    forbidNonWhitelisted: true,
+    exceptionFactory: (errors) => {
+      const messages = errors.map((error) => {
+        const constraints = error.constraints;
+        if (constraints) {
+          return Object.values(constraints).join(', ');
+        }
+        return `${error.property} has invalid value`;
+      });
+      return new BadRequestException({
+        statusCode: 400,
+        message: messages.length > 0 ? messages : 'Validation failed',
+        error: 'Bad Request',
+      });
+    },
   }));
 
   // Enable CORS 
