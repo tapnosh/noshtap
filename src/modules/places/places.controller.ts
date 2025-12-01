@@ -1,11 +1,14 @@
 import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { GooglePlacesService } from './google-places.service';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('places')
 export class PlacesController {
   constructor(private readonly googlePlacesService: GooglePlacesService) { }
 
   @Get('autocomplete')
+  @ApiQuery({ name: 'input', type: String, required: true })
+  @ApiQuery({ name: 'sessionToken', type: String, required: false })
   async autocomplete(
     @Query('input') input: string,
     @Query('sessionToken') sessionToken?: string,
