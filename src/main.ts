@@ -18,6 +18,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'https://tapnosh.com',
       'https://www.tapnosh.com',
+      'https://tapnosh-*-tapnoshs-projects.vercel.app',
       process.env.FRONTEND_URL,
     ],
     credentials: true,
