@@ -8,6 +8,7 @@ import { ClerkClientProvider } from './providers/clerk-client.provider';
 import { APP_GUARD } from '@nestjs/core';
 import { ClerkAuthGuard } from './modules/auth/clerk-auth.guard';
 import { UsersModule } from './modules/users/users.module';
+import { PlacesModule } from './modules/places/places.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UsersModule } from './modules/users/users.module';
     EventEmitterModule.forRoot(),
     RestaurantsModule,
     UsersModule,
+    PlacesModule,
     PrismaModule,
     AuthModule
   ],
