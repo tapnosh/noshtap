@@ -39,7 +39,6 @@ export class RestaurantDto {
                 streetNumber: restaurant.address.streetNumber,
                 city: restaurant.address.city,
                 state: restaurant.address.state,
-                stateCode: restaurant.address.stateCode,
                 country: restaurant.address.country,
                 countryCode: restaurant.address.countryCode,
                 postalCode: restaurant.address.postalCode,

@@ -44,14 +44,6 @@ export class CreateAddressDto {
     state: string;
 
     /**
-     * State code
-     * @example "WP"
-     */
-    @IsString()
-    @MaxLength(20)
-    stateCode: string;
-
-    /**
      * Country
      * @example "Polska"
      */
