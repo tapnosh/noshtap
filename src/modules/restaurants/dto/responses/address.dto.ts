@@ -5,7 +5,6 @@ export class AddressDto {
     streetNumber: string;
     city: string;
     state: string;
-    stateCode: string;
     country: string;
     countryCode: string;
     postalCode: string;
