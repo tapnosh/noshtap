@@ -113,6 +113,8 @@ export class GooglePlacesService {
       predictions: (data.predictions ?? []).map((prediction: any) => ({
         description: prediction.description,
         placeId: prediction.place_id,
+        mainText: prediction.structured_formatting?.main_text,
+        secondaryText: prediction.structured_formatting?.secondary_text,
       })),
     };
   }
