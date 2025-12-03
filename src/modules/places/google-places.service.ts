@@ -191,7 +191,6 @@ export class GooglePlacesService {
       streetNumber: streetNumber?.long_name ?? '',
       city,
       state: adminAreaLevel1?.long_name ?? '',
-      stateCode: adminAreaLevel1?.short_name ?? '',
       country: country?.long_name ?? '',
       countryCode: country?.short_name ?? '',
       postalCode: postalCode?.long_name ?? '',
