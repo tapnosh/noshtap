@@ -62,7 +62,6 @@ model RestaurantAddress {
   postalCode    String
   city          String
   state         String
-  stateCode     String
   country       String
   countryCode   String
   lat           Decimal
