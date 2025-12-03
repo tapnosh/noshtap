@@ -11,7 +11,7 @@ export class RestaurantsService {
     constructor(private prisma: PrismaService) { }
 
     async create(createRestaurantDto: CreateRestaurantDto, userId: string, randomSuffix: boolean = false): Promise<RestaurantWithRelations> {
-        const { formattedAddress, street, streetNumber, city, state, stateCode, country, countryCode, postalCode, lat, lng, } = createRestaurantDto.address;
+        const { formattedAddress, street, streetNumber, city, state, country, countryCode, postalCode, lat, lng, } = createRestaurantDto.address;
         const data: Prisma.RestaurantCreateInput = {
             slug: this.createSlug(createRestaurantDto.name, randomSuffix),
             ownerId: userId,
@@ -30,7 +30,6 @@ export class RestaurantsService {
                     streetNumber,
                     city,
                     state,
-                    stateCode,
                     country,
                     countryCode,
                     postalCode,
@@ -99,7 +98,6 @@ export class RestaurantsService {
                     streetNumber: dto.address.streetNumber,
                     city: dto.address.city,
                     state: dto.address.state,
-                    stateCode: dto.address.stateCode,
                     country: dto.address.country,
                     countryCode: dto.address.countryCode,
                     postalCode: dto.address.postalCode,
