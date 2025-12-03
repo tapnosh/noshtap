@@ -188,52 +188,40 @@ export class RestaurantsService {
     }
 
     async findAllWithLocation(
-        lat?: number,
-        lng?: number,
-        radiusKm?: number,
+        lat: number,
+        lng: number,
+        radiusKm: number,
     ): Promise<RestaurantWithRelations[]> {
         const baseWhere: Prisma.RestaurantWhereInput = {
             is_deleted: false,
         };
         
-        const hasGeo = 
-            lat !== undefined &&
-            lng !== undefined &&
-            radiusKm !== undefined;
+        const { minLat, maxLat, minLng, maxLng } = this.getBoundingBox(
+            lat,
+            lng,
+            radiusKm,
+        );
 
-        let where: Prisma.RestaurantWhereInput = baseWhere;
-
-        if (hasGeo) {
-            const { minLat, maxLat, minLng, maxLng } = this.getBoundingBox(
-                lat!,
-                lng!,
-                radiusKm!,
-            );
-
-            where = {
-                ...baseWhere,
-                address: {
-                    lat: { gte: minLat, lte: maxLat },
-                    lng: { gte: minLng, lte: maxLng },
-                },
-            };
-        }
-        let restaurants = await this.prisma.restaurant.findMany({
+        const where: Prisma.RestaurantWhereInput = {
+            ...baseWhere,
+            address: {
+                lat: { gte: minLat, lte: maxLat },
+                lng: { gte: minLng, lte: maxLng },
+            },
+        };
+        
+        const restaurants = await this.prisma.restaurant.findMany({
             where,
             include: kRestaurantWithRelationsInclude,
         });
-
-        if (!hasGeo) {
-            return restaurants;
-        }
 
         const filtered = restaurants
             .map((restaurant) => {
                 if (!restaurant.address) return null;
 
                 const distance = this.calculateDistanceKm(
-                    lat!,
-                    lng!,
+                    lat,
+                    lng,
                     Number(restaurant.address.lat),
                     Number(restaurant.address.lng),
                 );
@@ -242,7 +230,7 @@ export class RestaurantsService {
             })
             .filter(
                 (item): item is { restaurant: RestaurantWithRelations, distance: number } =>
-                    !!item && item.distance <= radiusKm!,
+                    !!item && item.distance <= radiusKm,
             )
             .sort((a, b) => a.distance - b.distance)
             .slice(0,100)

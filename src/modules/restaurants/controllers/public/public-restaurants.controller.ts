@@ -36,28 +36,24 @@ export class PublicRestaurantsController {
         @Query('lng') lng?: string,
         @Query('radiusKm') radiusKm?: string,
     ): Promise<RestaurantDto[]> {
-        
-        const numericLat = lat !== undefined ? Number(lat) : undefined;
-        const numericLng = lng !== undefined ? Number(lng) : undefined;
-        const numericRadiusKm = radiusKm !== undefined ? Number(radiusKm) : undefined;
 
-        const anyGeoProvided = lat !== undefined || lng !== undefined || radiusKm !== undefined;
+        const anyGeoProvided = this.anyGeoProvided(lat, lng, radiusKm);
+
+        const numericLat = this.parseNumberQueryParam(lat);
+        const numericLng = this.parseNumberQueryParam(lng);
+        const numericRadiusKm = this.parseNumberQueryParam(radiusKm);
 
         if (anyGeoProvided) {
-            if (
-            numericLat === undefined || Number.isNaN(numericLat) ||
-            numericLng === undefined || Number.isNaN(numericLng) ||
-            numericRadiusKm === undefined || Number.isNaN(numericRadiusKm)
-            ) {
-            throw new BadRequestException('lat, lng and radiusKm must be all-or-nothing numeric parameters');
-            }
+            this.ensureValidGeoParams(numericLat, numericLng, numericRadiusKm);
         }
 
-        const restaurants = await this.restaurantsService.findAllWithLocation(
-            numericLat,
-            numericLng,
-            numericRadiusKm,
-        );
+        const restaurants = anyGeoProvided
+            ? await this.restaurantsService.findAllWithLocation(
+                numericLat!,
+                numericLng!,
+                numericRadiusKm!,
+            )
+            : await this.restaurantsService.findAll();
 
         return restaurants.map(restaurant => RestaurantDto.fromPrisma(restaurant));
     }
@@ -71,5 +67,44 @@ export class PublicRestaurantsController {
         }
 
         return RestaurantDto.fromPrisma(restaurant);
+    }
+
+    private anyGeoProvided(
+        lat?: string,
+        lng?: string,
+        radiusKm?: string,
+    ): boolean {
+        return lat !== undefined || lng !== undefined || radiusKm !== undefined;
+    }
+
+    private parseNumberQueryParam(value?: string): number | undefined {
+        if (value === undefined) {
+            return undefined;
+        }
+
+        const num = Number(value);
+        return Number.isNaN(num) ? undefined : num;
+    }
+
+    private ensureValidGeoParams(
+        lat?: number,
+        lng?: number,
+        radiusKm?: number,
+    ): void {
+        const allProvided =
+            lat !== undefined &&
+            lng !== undefined &&
+            radiusKm !== undefined;
+
+        const noneProvided =
+            lat === undefined &&
+            lng === undefined &&
+            radiusKm === undefined;
+
+        if (allProvided || noneProvided) {
+            return;
+        }
+
+        throw new BadRequestException('Please provide all arguments lat, lng and radiusKm or remove all.');
     }
 }
