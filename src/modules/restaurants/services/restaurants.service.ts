@@ -26,15 +26,15 @@ export class RestaurantsService {
             address: {
                 create: {
                     name: formattedAddress,
-                    street,
-                    streetNumber,
-                    city,
-                    state,
-                    country,
-                    countryCode,
+                    street: street,
+                    streetNumber: streetNumber,
+                    city: city,
+                    state: state,
+                    country: country,
+                    countryCode: countryCode,
                     postalCode,
-                    lat,
-                    lng,
+                    lat: lat,
+                    lng: lng
                 },
             },
 
@@ -274,7 +274,7 @@ export class RestaurantsService {
             .trim()
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_-]+/g, '-d')
+            .replace(/[\s_-]+/g, '-')
             .replace(/^-+|-+$/g, '');
 
         if (randomSuffix) {
