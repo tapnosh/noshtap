@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateRestaurantDto } from "../dto/requests/create-restaurant.dto";
 import { UpdateRestaurantDto } from "../dto/requests/update-restaurant.dto";
-import { Prisma } from "@prisma/client";
+import { Prisma, CategoryType } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { kRestaurantWithRelationsInclude, RestaurantWithRelations } from "../types/restaurant_with_relations";
 
@@ -191,8 +191,9 @@ export class RestaurantsService {
         lat: number,
         lng: number,
         radiusKm: number,
+        cuisineTypeId?: string,
     ): Promise<RestaurantWithRelations[]> {
-        const baseWhere: Prisma.RestaurantWhereInput = {
+        let where: Prisma.RestaurantWhereInput = {
             is_deleted: false,
         };
         
@@ -202,13 +203,28 @@ export class RestaurantsService {
             radiusKm,
         );
 
-        const where: Prisma.RestaurantWhereInput = {
-            ...baseWhere,
+        where = {
+            ...where,
             address: {
                 lat: { gte: minLat, lte: maxLat },
                 lng: { gte: minLng, lte: maxLng },
             },
         };
+
+        if (cuisineTypeId) {
+            where = {
+                ...where,
+                categories: {
+                    some: {
+                        category: {
+                            id: cuisineTypeId,
+                            type: CategoryType.cuisine,
+                        },
+                    },
+                },
+            };
+        };
+
         
         const restaurants = await this.prisma.restaurant.findMany({
             where,
