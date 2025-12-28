@@ -32,8 +32,8 @@ export class MenuMapper {
                     version: g.version,
                     type: g.type,
                     name: g.name,
-                    timeFrom: new Date(g.timeFrom),
-                    timeTo: new Date(g.timeTo),
+                    timeFrom: g.timeFrom,
+                    timeTo: g.timeTo,
                     order: index,
                     items: {
                         create: g.items.map((item, itemIndex) => ({
@@ -107,8 +107,8 @@ export class MenuMapper {
                     version: g.version,
                     type: g.type,
                     name: g.name,
-                    timeFrom: new Date(g.timeFrom),
-                    timeTo: new Date(g.timeTo),
+                    timeFrom: g.timeFrom,
+                    timeTo: g.timeTo,
                     order: index,
                     items: {
                         create: g.items.map((item, itemIndex) => ({
@@ -246,8 +246,8 @@ export class MenuMapper {
                     version: g.version as 'v1',
                     type: 'menu-group',
                     name: g.name,
-                    timeFrom: g.timeFrom.toISOString(),
-                    timeTo: g.timeTo.toISOString(),
+                    timeFrom: g.timeFrom,
+                    timeTo: g.timeTo,
                     items,
                 };
                 return group;

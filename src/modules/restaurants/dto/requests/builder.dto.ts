@@ -13,6 +13,7 @@ import {
   MinLength,
   ArrayMaxSize,
   IsDateString,
+  Matches,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
@@ -126,10 +127,16 @@ export class BuilderMenuGroupDto {
   @MinLength(1)
   name: string;
 
-  @IsDateString()
+  @IsString()
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+    message: 'timeFrom must be in HH:MM format',
+  })
   timeFrom: string;
 
-  @IsDateString()
+  @IsString()
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+    message: 'timeTo must be in HH:MM format',
+  })
   timeTo: string;
 
   @IsArray()
