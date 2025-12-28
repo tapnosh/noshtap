@@ -5,11 +5,18 @@ import { UpdateMenuDto } from '../dto/requests/update-menu.dto';
 import { CurrentUser } from "src/decorators/current-user.decorator";
 import { User } from '@clerk/backend';
 import { RestaurantMenu } from "@prisma/client";
-import { Public } from "src/decorators/public.decorator";
 
 @Controller('restaurants/:restaurantId/menu')
 export class MenusController {
     constructor(private readonly menusService: MenusService) { }
+
+    @Get()
+    findAll(
+        @Param('restaurantId') restaurantId: string,
+        @CurrentUser() user: User,
+    ) {
+        return this.menusService.findAll(restaurantId, user.id);
+    }
 
     @Post()
     create(

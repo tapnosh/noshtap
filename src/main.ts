@@ -6,11 +6,18 @@ import { ValidationPipe, BadRequestException } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+
   // Enable global validation pipe for DTO validation
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     transform: true,
   }));
+
+  app.use((req, res, next) => {
+    console.log('Incoming Request Origin:', req.headers.origin);
+    console.log('Incoming Request Method:', req.method);
+    next();
+  });
 
   // Enable CORS 
   app.enableCors({

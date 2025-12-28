@@ -126,18 +126,155 @@ model RestaurantCategoryRelation {
   @@unique([restaurant_id, category_id])
 }
 
-model RestaurantMenu {
-  id            String   @id @default(uuid())
-  name          String   @db.VarChar(255)
-  restaurant_id String
-  schema        Json
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  is_deleted    Boolean  @default(false)
+enum MenuHeaderType {
+  text
+  heading
+}
 
-  restaurant Restaurant @relation(fields: [restaurant_id], references: [id])
+model RestaurantMenu {
+  id            String      @id @default(uuid())
+  name          String      @db.VarChar(255)
+  restaurant_id String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  is_deleted    Boolean     @default(false)
+
+  restaurant Restaurant    @relation(fields: [restaurant_id], references: [id])
+  headers     MenuHeader[]
+  groups      MenuGroup[]
 
   @@index([restaurant_id, is_deleted(false)])
+}
+
+model MenuHeader {
+  id            String          @id @default(uuid())
+  menu_id       String
+  version       String          @default("v1") @db.VarChar(10)
+  type          MenuHeaderType
+  text          String?         // For type: "text"
+  heading       String?         // For type: "heading"
+  order         Int             // Order within the header array
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  menu          RestaurantMenu  @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+
+  @@index([menu_id, order])
+}
+
+model MenuGroup {
+  id            String      @id @default(uuid())
+  menu_id       String
+  version       String      @default("v1") @db.VarChar(10)
+  type          String      @default("menu-group") @db.VarChar(20)
+  name          String      @db.VarChar(255) // min 1 char
+  timeFrom      DateTime    // UTC date
+  timeTo        DateTime    // UTC date
+  order         Int         // Order within the menu array
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  menu          RestaurantMenu  @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+  items         MenuItem[]
+
+  @@index([menu_id, order])
+}
+
+model MenuItem {
+  id            String              @id @default(uuid())
+  group_id      String
+  version       String              @default("v1") @db.VarChar(10)
+  item_id       String              // The id from BuilderMenuItem
+  name          String              @db.VarChar(80) // min 1, max 80 chars
+  description   String?             @db.VarChar(200) // max 200 chars
+  price_amount  Decimal             @db.Decimal(10, 2) // positive number
+  price_currency String             @db.VarChar(10)
+  confirmed     Boolean?            @default(false)
+  order         Int                 // Order within the items array
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  group         MenuGroup           @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  image         MenuItemImage?
+  allergens     MenuItemAllergen[]
+  foodTypes     MenuItemFoodType[]
+  ingredients   MenuItemIngredient[]
+  categories    MenuItemCategory[]
+
+  @@index([group_id, order])
+  @@index([item_id])
+}
+
+model MenuItemImage {
+  id                  String   @id @default(uuid())
+  item_id             String   @unique
+  url                 String   @db.Text // URL
+  downloadUrl         String?  @db.Text // URL
+  pathname            String?  @db.VarChar(500)
+  contentType         String?  @db.VarChar(100)
+  contentDisposition  String?  @db.VarChar(200)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  item                MenuItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
+}
+
+model MenuItemAllergen {
+  id            String   @id @default(uuid())
+  item_id       String
+  allergen_id   String   // id from RestaurantCategoryDto
+  name          String   @db.VarChar(255)
+  description   String   @db.Text
+  order         Int      // Order within allergens array
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  item          MenuItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@index([item_id, order])
+  @@unique([item_id, allergen_id])
+}
+
+model MenuItemFoodType {
+  id            String   @id @default(uuid())
+  item_id       String
+  food_type_id  String   // id from RestaurantCategoryDto
+  name          String   @db.VarChar(255)
+  description   String   @db.Text
+  order         Int      // Order within food_types array
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  item          MenuItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@index([item_id, order])
+  @@unique([item_id, food_type_id])
+}
+
+model MenuItemIngredient {
+  id            String   @id @default(uuid())
+  item_id       String
+  ingredient    String   @db.VarChar(255) // string from ingredients array
+  order         Int      // Order within ingredients array
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  item          MenuItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@index([item_id, order])
+}
+
+model MenuItemCategory {
+  id            String   @id @default(uuid())
+  item_id       String
+  category      String   @db.VarChar(255) // string from categories array
+  order         Int      // Order within categories array
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  item          MenuItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@index([item_id, order])
 }
 
 model QrCode {
