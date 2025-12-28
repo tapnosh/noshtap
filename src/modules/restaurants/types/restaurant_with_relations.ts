@@ -17,6 +17,22 @@ export const kRestaurantWithRelationsInclude = {
             createdAt: 'desc',
         },
         take: 1,
+        include: {
+            headers: true,
+            groups: {
+                include: {
+                    items: {
+                        include: {
+                            image: true,
+                            allergens: true,
+                            foodTypes: true,
+                            ingredients: true,
+                            categories: true
+                        }
+                    }
+                }
+            }
+        }
     },
 } as const satisfies Prisma.RestaurantInclude;
 
@@ -38,6 +54,22 @@ export type RestaurantWithRelations = Prisma.RestaurantGetPayload<{
                 createdAt: 'desc',
             },
             take: 1,
+            include: {
+                headers: true,
+                groups: {
+                    include: {
+                        items: {
+                            include: {
+                                image: true,
+                                allergens: true,
+                                foodTypes: true,
+                                ingredients: true,
+                                categories: true
+                            }
+                        }
+                    }
+                }
+            }
         },
     }
 }>;

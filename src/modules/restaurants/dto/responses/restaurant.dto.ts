@@ -4,6 +4,7 @@ import { ImageDto } from "./image.dto";
 import { RestaurantThemeDto } from "./restaurant-theme.dto";
 import { RestaurantWithRelations } from "../../types/restaurant_with_relations";
 import { PriceRange } from "@prisma/client";
+import { MenuMapper } from "../../mappers/menu.mapper";
 
 export class RestaurantDto {
     id: string;
@@ -61,7 +62,7 @@ export class RestaurantDto {
                     description: category.category.description,
                 };
             }),
-            menu: restaurant.menus[0]?.schema as Record<string, any>,
+            menu: restaurant.menus[0] ? MenuMapper.mapFromDb(restaurant.menus[0] as any) : undefined,
             phoneNumber: restaurant.phoneNumber,
             facebookUrl: restaurant.facebookUrl,
             instagramUrl: restaurant.instagramUrl,
