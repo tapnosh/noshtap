@@ -12,6 +12,7 @@ import {
   MaxLength,
   MinLength,
   ArrayMaxSize,
+  IsDateString,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
@@ -125,12 +126,10 @@ export class BuilderMenuGroupDto {
   @MinLength(1)
   name: string;
 
-  @IsString()
-  @MinLength(1)
+  @IsDateString()
   timeFrom: string;
 
-  @IsString()
-  @MinLength(1)
+  @IsDateString()
   timeTo: string;
 
   @IsArray()

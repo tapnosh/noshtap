@@ -97,8 +97,8 @@ describe('MenusController (e2e)', () => {
                         version: 'v1',
                         type: 'menu-group',
                         name: 'Test Group',
-                        timeFrom: '00:00',
-                        timeTo: '23:59',
+                        timeFrom: new Date().toISOString(),
+                        timeTo: new Date().toISOString(),
                         items: [
                             {
                                 version: 'v1',

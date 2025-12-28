@@ -168,8 +168,8 @@ model MenuGroup {
   version       String      @default("v1") @db.VarChar(10)
   type          String      @default("menu-group") @db.VarChar(20)
   name          String      @db.VarChar(255) // min 1 char
-  timeFrom      String      @db.VarChar(10) // min 1 char, e.g., "07:00"
-  timeTo        String      @db.VarChar(10) // min 1 char, e.g., "12:00"
+  timeFrom      DateTime    // UTC date
+  timeTo        DateTime    // UTC date
   order         Int         // Order within the menu array
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
