@@ -108,6 +108,7 @@ export class RestaurantsService {
             : undefined;
 
         const data: Prisma.RestaurantUpdateInput = {
+            id: id,
             name: dto.name,
             slug: this.createSlug(dto.name, randomSuffix),
             description: dto.description,
