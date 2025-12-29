@@ -118,14 +118,17 @@ export class RestaurantsService {
             instagramUrl: dto.instagramUrl,
             reservationUrl: dto.reservationUrl,
             images: {
-                disconnect: restaurant.images.length > 0 ? restaurant.images.map((img) => ({ id: img.id })) : undefined,
-                create: dto.images.map((image) => ({
-                    image_url: image.url,
-                    download_url: image.downloadUrl,
-                    pathname: image.pathname,
-                    content_type: image.contentType,
-                    content_disposition: image.contentDisposition,
-                })),
+                deleteMany: {
+                    restaurant_id: id,
+                    id: {
+                        notIn: dto.images.map((img: any) => img.id).filter(Boolean)
+                    }
+                },
+                upsert: dto.images.map((img: any) => ({
+                    where: { id: img.id },
+                    create: { ...img },
+                    update: { ...img }
+                }))
             },
             categories: {
                 disconnect: restaurant.categories.length > 0 ? restaurant.categories.map((cat) => ({
