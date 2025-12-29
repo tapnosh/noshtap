@@ -113,10 +113,10 @@ export class RestaurantsService {
             description: dto.description,
             priceRange: dto.priceRange,
             theme: { connect: { id: dto.theme_id } }, //theme id is optional should we fix it? fx. theme: dto.theme_id ? { connect: { id: dto.theme_id } } : undefined,
-            ...(dto.phoneNumber !== undefined && { phoneNumber: dto.phoneNumber }),
-            ...(dto.facebookUrl !== undefined && { facebookUrl: dto.facebookUrl }),
-            ...(dto.instagramUrl !== undefined && { instagramUrl: dto.instagramUrl }),
-            ...(dto.reservationUrl !== undefined && { reservationUrl: dto.reservationUrl }),
+            phoneNumber: dto.phoneNumber,
+            facebookUrl: dto.facebookUrl,
+            instagramUrl: dto.instagramUrl,
+            reservationUrl: dto.reservationUrl,
             images: {
                 disconnect: restaurant.images.length > 0 ? restaurant.images.map((img) => ({ id: img.id })) : undefined,
                 create: dto.images.map((image) => ({
@@ -196,7 +196,7 @@ export class RestaurantsService {
         let where: Prisma.RestaurantWhereInput = {
             is_deleted: false,
         };
-        
+
         const { minLat, maxLat, minLng, maxLng } = this.getBoundingBox(
             lat,
             lng,
@@ -225,7 +225,7 @@ export class RestaurantsService {
             };
         };
 
-        
+
         const restaurants = await this.prisma.restaurant.findMany({
             where,
             include: kRestaurantWithRelationsInclude,
@@ -249,7 +249,7 @@ export class RestaurantsService {
                     !!item && item.distance <= radiusKm,
             )
             .sort((a, b) => a.distance - b.distance)
-            .slice(0,100)
+            .slice(0, 100)
             .map((item) => item.restaurant);
 
         return filtered;
@@ -328,20 +328,20 @@ export class RestaurantsService {
         lat2: number,
         lng2: number,
     ): number {
-        const R = 6371; 
+        const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLng = (lng2 - lng1) * Math.PI / 180;
 
-        const a = 
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) + 
-            Math.cos(lat1 * Math.PI / 180) * 
-                Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLng / 2) * 
-                Math.sin(dLng / 2);
-        
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) *
+            Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng / 2) *
+            Math.sin(dLng / 2);
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return R * c;        
+        return R * c;
     }
 
     private isSlugConflictError(error: any): boolean {
