@@ -131,13 +131,15 @@ export class RestaurantsService {
                 })),
             },
             categories: {
-                disconnect: restaurant.categories.length > 0 ? restaurant.categories.map((cat) => ({
-                    id: cat.id,
-                })) : undefined,
-                create: dto.category_ids.map((categoryId) => ({
-                    category: {
-                        connect: { id: categoryId },
-                    },
+                deleteMany: {
+                    restaurant_id: id,
+                    id: {
+                        notIn: dto.category_ids
+                    }
+                },
+                connectOrCreate: dto.category_ids.map((categoryId) => ({
+                    where: { id: categoryId },
+                    create: { category: { connect: { id: categoryId } } },
                 })),
             },
             address: addressData,
