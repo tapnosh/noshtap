@@ -125,11 +125,10 @@ export class RestaurantsService {
                         notIn: dto.images.map((img: any) => img.id).filter(Boolean)
                     }
                 },
-                upsert: dto.images.map((img: any) => ({
+                connectOrCreate: dto.images.map((img: any) => ({
                     where: { id: img.id || 'undefined-id' },
-                    create: { ...img },
-                    update: { ...img, image_url: restaurant.images.find((image) => image.id === img.id)?.image_url }
-                }))
+                    create: { image_url: img.url, download_url: img.downloadUrl, pathname: img.pathname, content_type: img.contentType, content_disposition: img.contentDisposition },
+                })),
             },
             categories: {
                 disconnect: restaurant.categories.length > 0 ? restaurant.categories.map((cat) => ({
