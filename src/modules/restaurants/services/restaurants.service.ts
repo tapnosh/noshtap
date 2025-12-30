@@ -126,7 +126,7 @@ export class RestaurantsService {
                     }
                 },
                 upsert: dto.images.map((img: any) => ({
-                    where: { id: img.id },
+                    where: { id: img.id || 'undefined-id' },
                     create: { ...img },
                     update: { ...img }
                 }))
