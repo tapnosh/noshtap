@@ -128,7 +128,7 @@ export class RestaurantsService {
                 upsert: dto.images.map((img: any) => ({
                     where: { id: img.id || 'undefined-id' },
                     create: { ...img },
-                    update: { ...img }
+                    update: { ...img, image_url: restaurant.images.find((image) => image.id === img.id)?.image_url }
                 }))
             },
             categories: {
