@@ -3,6 +3,7 @@ import { CreateImageDto } from './create-image.dto';
 import { Type } from 'class-transformer';
 import { CreateAddressDto } from './create-address.dto';
 import { PriceRange } from '@prisma/client';
+import { OperatingHoursDto } from './operating-hours.dto';
 
 export class UpdateRestaurantDto {
      /**
@@ -102,4 +103,13 @@ export class UpdateRestaurantDto {
      @IsEnum(PriceRange)
      @IsOptional()
      priceRange?: PriceRange;
+
+     /**
+      * The operating hours of the restaurant
+      * @example { "monday": { "openFrom": "09:00", "openUntil": "22:00" }, ... }
+      */
+     @IsOptional()
+     @ValidateNested()
+     @Type(() => OperatingHoursDto)
+     operatingHours?: OperatingHoursDto;
 }
