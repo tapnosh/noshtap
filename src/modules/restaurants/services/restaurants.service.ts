@@ -5,6 +5,7 @@ import { UpdateRestaurantDto } from "../dto/requests/update-restaurant.dto";
 import { Prisma, CategoryType } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { kRestaurantWithRelationsInclude, RestaurantWithRelations } from "../types/restaurant_with_relations";
+import { DEFAULT_OPERATING_HOURS } from "../restaurants.constants";
 
 @Injectable()
 export class RestaurantsService {
@@ -23,6 +24,7 @@ export class RestaurantsService {
             instagramUrl: createRestaurantDto.instagramUrl,
             reservationUrl: createRestaurantDto.reservationUrl,
             priceRange: createRestaurantDto.priceRange ?? undefined,
+            operatingHours: (createRestaurantDto.operatingHours ?? DEFAULT_OPERATING_HOURS) as any,
             address: {
                 create: {
                     name: formattedAddress,
@@ -113,6 +115,7 @@ export class RestaurantsService {
             slug: this.createSlug(dto.name, randomSuffix),
             description: dto.description,
             priceRange: dto.priceRange,
+            operatingHours: dto.operatingHours as any,
             theme: { connect: { id: dto.theme_id } }, //theme id is optional should we fix it? fx. theme: dto.theme_id ? { connect: { id: dto.theme_id } } : undefined,
             phoneNumber: dto.phoneNumber,
             facebookUrl: dto.facebookUrl,
