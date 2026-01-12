@@ -191,6 +191,8 @@ model MenuItem {
   price_amount  Decimal             @db.Decimal(10, 2) // positive number
   price_currency String             @db.VarChar(10)
   confirmed     Boolean?            @default(false)
+  disabledFrom  DateTime?
+  disabledUntil DateTime?
   order         Int                 // Order within the items array
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
