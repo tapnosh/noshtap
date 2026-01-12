@@ -5,6 +5,7 @@ import { UpdateMenuDto } from "../dto/requests/update-menu.dto";
 import { RestaurantMenu } from "@prisma/client";
 import { MenuMapper } from "../mappers/menu.mapper";
 import { BuilderDto } from "../dto/requests/builder.dto";
+import { DisableMenuItemDto } from "../dto/requests/disable-menu-item.dto";
 
 @Injectable()
 export class MenusService {
@@ -206,6 +207,34 @@ export class MenusService {
             ...menu,
             schema: MenuMapper.mapFromDb(menu)
         };
+    }
+
+    async disableItem(dto: DisableMenuItemDto, userId: string): Promise<void> {
+        const item = await this.prisma.menuItem.findFirst({
+            where: {
+                item_id: dto.menuItemId,
+                group: {
+                    menu: {
+                        restaurant_id: dto.restaurantId,
+                        restaurant: {
+                            ownerId: userId,
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!item) {
+            throw new NotFoundException('Menu item not found or you do not have permission.');
+        }
+
+        await this.prisma.menuItem.update({
+            where: { id: item.id },
+            data: {
+                disabledFrom: dto.disabledFrom ? new Date(dto.disabledFrom) : null,
+                disabledUntil: dto.disabledUntil ? new Date(dto.disabledUntil) : null,
+            }
+        });
     }
 
     private generateRandomName(): string {

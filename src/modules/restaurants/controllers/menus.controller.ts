@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Put, Delete, Param } from "@nestjs/common"
 import { MenusService } from '../services/menus.service';
 import { CreateMenuDto } from '../dto/requests/create-menu.dto';
 import { UpdateMenuDto } from '../dto/requests/update-menu.dto';
+import { DisableMenuItemDto } from '../dto/requests/disable-menu-item.dto';
 import { CurrentUser } from "src/decorators/current-user.decorator";
 import { User } from '@clerk/backend';
 import { RestaurantMenu } from "@prisma/client";
@@ -49,5 +50,13 @@ export class MenusController {
         return {
             message: 'Menu deleted successfully',
         };
+    }
+
+    @Post('disable-item')
+    disableItem(
+        @Body() disableMenuItemDto: DisableMenuItemDto,
+        @CurrentUser() user: User,
+    ) {
+        return this.menusService.disableItem(disableMenuItemDto, user.id);
     }
 }
