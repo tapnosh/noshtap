@@ -44,6 +44,8 @@ export class MenuMapper {
                             price_amount: item.price.amount,
                             price_currency: item.price.currency,
                             confirmed: item.confirmed,
+                            disabledFrom: item.disabledFrom ? new Date(item.disabledFrom) : null,
+                            disabledUntil: item.disabledUntil ? new Date(item.disabledUntil) : null,
                             order: itemIndex,
                             image: item.image && item.image.length > 0 ? {
                                 create: {
@@ -119,6 +121,8 @@ export class MenuMapper {
                             price_amount: item.price.amount,
                             price_currency: item.price.currency,
                             confirmed: item.confirmed,
+                            disabledFrom: item.disabledFrom ? new Date(item.disabledFrom) : null,
+                            disabledUntil: item.disabledUntil ? new Date(item.disabledUntil) : null,
                             order: itemIndex,
                             image: item.image && item.image.length > 0 ? {
                                 create: {
@@ -238,6 +242,8 @@ export class MenuMapper {
                             confirmed: item.confirmed || undefined,
                             ingredients: ingredients.length > 0 ? ingredients : undefined,
                             categories: categories.length > 0 ? categories : undefined,
+                            disabledFrom: item.disabledFrom ? item.disabledFrom.toISOString() : undefined,
+                            disabledUntil: item.disabledUntil ? item.disabledUntil.toISOString() : undefined,
                         };
                         return builderItem;
                     });
