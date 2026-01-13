@@ -56,7 +56,7 @@ export class MenusController {
     disableItem(
         @Body() disableMenuItemDto: DisableMenuItemDto,
         @CurrentUser() user: User,
-    ) {
+    ): Promise<{ isDisabled: boolean }> {
         return this.menusService.disableItem(disableMenuItemDto, user.id);
     }
 }

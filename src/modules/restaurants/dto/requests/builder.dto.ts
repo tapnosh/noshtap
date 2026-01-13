@@ -114,6 +114,14 @@ export class BuilderMenuItemDto {
   @IsArray()
   @IsString({ each: true })
   categories?: string[];
+
+  @IsOptional()
+  @IsDateString()
+  disabledFrom?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  disabledUntil?: string | null;
 }
 
 export class BuilderMenuGroupDto {

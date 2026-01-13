@@ -209,7 +209,7 @@ export class MenusService {
         };
     }
 
-    async disableItem(dto: DisableMenuItemDto, userId: string): Promise<void> {
+    async disableItem(dto: DisableMenuItemDto, userId: string): Promise<{ isDisabled: boolean }> {
         const item = await this.prisma.menuItem.findFirst({
             where: {
                 item_id: dto.menuItemId,
@@ -228,13 +228,20 @@ export class MenusService {
             throw new NotFoundException('Menu item not found or you do not have permission.');
         }
 
+        const disabledFrom = dto.disabledFrom ? new Date(dto.disabledFrom) : null;
+        const disabledUntil = dto.disabledUntil ? new Date(dto.disabledUntil) : null;
+
         await this.prisma.menuItem.update({
             where: { id: item.id },
             data: {
-                disabledFrom: dto.disabledFrom ? new Date(dto.disabledFrom) : null,
-                disabledUntil: dto.disabledUntil ? new Date(dto.disabledUntil) : null,
+                disabledFrom,
+                disabledUntil,
             }
         });
+
+        return {
+            isDisabled: !!disabledFrom
+        };
     }
 
     private generateRandomName(): string {
