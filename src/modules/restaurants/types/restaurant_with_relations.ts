@@ -64,7 +64,9 @@ export type RestaurantWithRelations = Prisma.RestaurantGetPayload<{
                                 allergens: true,
                                 foodTypes: true,
                                 ingredients: true,
-                                categories: true
+                                categories: true,
+                                disabledUntil: true,
+                                disabledFrom: true
                             }
                         }
                     }
