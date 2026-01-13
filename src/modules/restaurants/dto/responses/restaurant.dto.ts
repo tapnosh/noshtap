@@ -23,6 +23,8 @@ export class RestaurantDto {
     priceRange?: PriceRange | null;
     isOwner?: boolean;
     operatingHours?: any; // Using any for simplicity as it's JSON from Prisma
+    createdAt: Date;
+    updatedAt: Date;
 
     static fromPrisma(restaurant: RestaurantWithRelations, userId?: string): RestaurantDto {
         return {
@@ -71,6 +73,8 @@ export class RestaurantDto {
             priceRange: restaurant.priceRange,
             operatingHours: restaurant.operatingHours,
             isOwner: userId ? restaurant.ownerId === userId : undefined,
+            createdAt: restaurant.createdAt,
+            updatedAt: restaurant.updatedAt,
         };
     }
 }

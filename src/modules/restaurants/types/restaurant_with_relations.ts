@@ -41,6 +41,8 @@ export type RestaurantWithRelations = Prisma.RestaurantGetPayload<{
         theme: true,
         address: true,
         images: true,
+        createdAt: true,
+        updatedAt: true,
         categories: {
             include: {
                 category: true,
