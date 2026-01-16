@@ -14,7 +14,7 @@ class MockClerkStrategy extends PassportStrategy(Strategy, 'clerk') {
     }
 
     async validate(req: any): Promise<any> {
-        return { id: 'user_123' };
+        return { id: 'user_menu_test' };
     }
 }
 
@@ -23,7 +23,7 @@ describe('MenusController (e2e)', () => {
     let prisma: PrismaService;
     let restaurantId: string;
 
-    const mockUser = { id: 'user_123' };
+    const mockUser = { id: 'user_menu_test' };
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -52,6 +52,7 @@ describe('MenusController (e2e)', () => {
         const existingRestaurants = await prisma.restaurant.findMany({ where: { ownerId: mockUser.id } });
         for (const r of existingRestaurants) {
             await prisma.restaurantMenu.deleteMany({ where: { restaurant_id: r.id } });
+            await prisma.restaurantAddress.deleteMany({ where: { restaurant_id: r.id } });
         }
         await prisma.restaurant.deleteMany({ where: { ownerId: mockUser.id } });
 
@@ -73,11 +74,8 @@ describe('MenusController (e2e)', () => {
         if (prisma) {
             const restaurants = await prisma.restaurant.findMany({ where: { ownerId: mockUser.id } });
             for (const r of restaurants) {
-                // Delete menus first because of FK constraint (no cascade on Restaurant -> RestaurantMenu)
-                // But RestaurantMenu -> Headers/Groups has cascade, so deleteMany on RestaurantMenu is enough.
-                // However, we need to make sure we delete all menus for this restaurant.
-                // Actually, we can just delete all menus for these restaurants.
                 await prisma.restaurantMenu.deleteMany({ where: { restaurant_id: r.id } });
+                await prisma.restaurantAddress.deleteMany({ where: { restaurant_id: r.id } });
             }
             await prisma.restaurant.deleteMany({ where: { ownerId: mockUser.id } });
             await prisma.$disconnect();
