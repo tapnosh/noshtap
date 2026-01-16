@@ -116,7 +116,7 @@ export class RestaurantsService {
             description: dto.description,
             priceRange: dto.priceRange,
             operatingHours: dto.operatingHours as any,
-            theme: { connect: { id: dto.theme_id } }, //theme id is optional should we fix it? fx. theme: dto.theme_id ? { connect: { id: dto.theme_id } } : undefined,
+            theme: dto.theme_id ? { connect: { id: dto.theme_id } } : undefined,
             phoneNumber: dto.phoneNumber,
             facebookUrl: dto.facebookUrl,
             instagramUrl: dto.instagramUrl,
